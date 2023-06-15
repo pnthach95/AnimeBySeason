@@ -1,0 +1,25 @@
+{
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "include": [
+    ".eslintrc.js",
+    "babel.config.js",
+    "index.js",
+    "react-native.config.js",
+    "tailwind.config.js",
+    "src/**/*"
+  ],
+  "exclude": [
+    "metro.config.js",
+  ],
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    /* Completeness */
+    "skipLibCheck": true, /* Skip type checking all .d.ts files. */
+    "baseUrl": "./",
+    "paths": {
+      "*": [
+        "src/*"
+      ]
+    },
+  }
+}

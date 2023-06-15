@@ -1,0 +1,51 @@
+{
+  "active": "Hoạt động",
+  "codepush": {
+    "cancel": "Bỏ qua",
+    "message": "Có cập nhật nội dung mới, bạn có muốn cập nhật không?\n(Trong quá trình cập nhật, ứng dụng sẽ tự khởi động lại)",
+    "title": "Cập nhật",
+    "update": "Cập nhật",
+    "updating": "Đang cập nhật, vui lòng chờ."
+  },
+  "company": "Công ty",
+  "coordinate": "Tọa độ",
+  "cost_per_launch": "Chi phí mỗi lần phóng",
+  "country": "Quốc gia",
+  "dark": "Tối",
+  "diameter": "Đường kính",
+  "first_flight": "Ngày phóng đầu tiên",
+  "height": "Chiều cao",
+  "inactive": "Không hoạt động",
+  "lang": {
+    "en": "English",
+    "vi": "Tiếng Việt"
+  },
+  "language": "Ngôn ngữ",
+  "latest_launch": "Lần phóng gần đây nhất",
+  "launch_attempts": "Số lần phóng",
+  "launch_successes": "Số lần phóng thành công",
+  "launchpad": "Bệ phóng",
+  "light": "Sáng",
+  "location": "Địa điểm",
+  "lost": "Bị mất",
+  "mass": "Khối lượng",
+  "next_launch": "Lần phóng tiếp theo",
+  "no-internet": "Không có mạng",
+  "reopen-app": "Mở lại app",
+  "retired": "Nghỉ hưu",
+  "rocket": "Tên lửa",
+  "server-error": "Máy chủ lỗi",
+  "session-expired": "Hết phiên đăng nhập",
+  "status": "Trạng thái",
+  "success_rate": "Tỉ lệ thành công",
+  "tabs": {
+    "tab1": "Trang chủ",
+    "tab2": "Cài đặt"
+  },
+  "theme": "Giao diện",
+  "timezone": "Múi giờ",
+  "undefined": "không xác định",
+  "under construction": "Đang xây dựng",
+  "unexpected-error": "Đã có lỗi xảy ra",
+  "unknown": "Không biết"
+}

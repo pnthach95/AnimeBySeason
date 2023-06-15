@@ -1,0 +1,51 @@
+{
+  "active": "Active",
+  "codepush": {
+    "cancel": "Cancel",
+    "message": "New update available, do you want to update?\n(During update, app will restart)",
+    "title": "Update",
+    "update": "Update",
+    "updating": "Updating. Please wait."
+  },
+  "company": "Company",
+  "coordinate": "Coordinate",
+  "cost_per_launch": "Cost per launch",
+  "country": "Country",
+  "dark": "Dark",
+  "diameter": "Diameter",
+  "first_flight": "First flight",
+  "height": "Height",
+  "inactive": "Inactive",
+  "lang": {
+    "en": "English",
+    "vi": "Tiếng Việt"
+  },
+  "language": "Language",
+  "latest_launch": "Latest launch",
+  "launch_attempts": "Launch attempts",
+  "launch_successes": "Launch successes",
+  "launchpad": "Launch pad",
+  "light": "Light",
+  "location": "Location",
+  "lost": "Lost",
+  "mass": "Mass",
+  "next_launch": "Next launch",
+  "no-internet": "No internet",
+  "reopen-app": "Reopen app",
+  "retired": "Retired",
+  "rocket": "Rocket",
+  "server-error": "Server error",
+  "session-expired": "Session is expired",
+  "status": "Status",
+  "success_rate": "Success rate",
+  "tabs": {
+    "tab1": "Home",
+    "tab2": "Settings"
+  },
+  "theme": "Theme",
+  "timezone": "Timezone",
+  "undefined": "undefined",
+  "under construction": "Under construction",
+  "unexpected-error": "An unexpected error occurred",
+  "unknown": "Unknown"
+}
