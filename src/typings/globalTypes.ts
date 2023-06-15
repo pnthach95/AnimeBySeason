@@ -69,6 +69,38 @@ export enum MediaSort {
 }
 
 /**
+ * Source type the media was adapted from
+ */
+export enum MediaSource {
+  ANIME = 'ANIME',
+  COMIC = 'COMIC',
+  DOUJINSHI = 'DOUJINSHI',
+  GAME = 'GAME',
+  LIGHT_NOVEL = 'LIGHT_NOVEL',
+  LIVE_ACTION = 'LIVE_ACTION',
+  MANGA = 'MANGA',
+  MULTIMEDIA_PROJECT = 'MULTIMEDIA_PROJECT',
+  NOVEL = 'NOVEL',
+  ORIGINAL = 'ORIGINAL',
+  OTHER = 'OTHER',
+  PICTURE_BOOK = 'PICTURE_BOOK',
+  VIDEO_GAME = 'VIDEO_GAME',
+  VISUAL_NOVEL = 'VISUAL_NOVEL',
+  WEB_NOVEL = 'WEB_NOVEL',
+}
+
+/**
+ * The current releasing status of the media
+ */
+export enum MediaStatus {
+  CANCELLED = 'CANCELLED',
+  FINISHED = 'FINISHED',
+  HIATUS = 'HIATUS',
+  NOT_YET_RELEASED = 'NOT_YET_RELEASED',
+  RELEASING = 'RELEASING',
+}
+
+/**
  * Media type enum, anime or manga.
  */
 export enum MediaType {

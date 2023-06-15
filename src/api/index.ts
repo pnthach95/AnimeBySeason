@@ -15,8 +15,9 @@ export const client = new ApolloClient({
                 | Record<string, AnimeList_Page_media[] | string>
                 | undefined,
               incoming: Record<string, AnimeList_Page_media[] | string>,
+              {args},
             ) {
-              if (existing === undefined) {
+              if (existing === undefined || args?.page === 1) {
                 return incoming;
               }
               const existingKeys = Object.keys(existing);

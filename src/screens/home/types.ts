@@ -9,38 +9,6 @@ import {
 // GraphQL query operation: AnimeList
 // ====================================================
 
-export interface AnimeList_Page_media_title {
-  __typename: 'MediaTitle';
-  /**
-   * The romanization of the native language title
-   */
-  romaji: string;
-  /**
-   * The official english title
-   */
-  english: string | null;
-  /**
-   * Official title in it's native language
-   */
-  native: string;
-}
-
-export interface AnimeList_Page_media_coverImage {
-  __typename: 'MediaCoverImage';
-  /**
-   * The cover image url of the media at medium size
-   */
-  medium: string | null;
-  /**
-   * The cover image url of the media at a large size
-   */
-  large: string | null;
-  /**
-   * Average #hex color of cover image
-   */
-  color: string | null;
-}
-
 export interface AnimeList_Page_media {
   __typename: 'Media';
   /**
@@ -54,11 +22,11 @@ export interface AnimeList_Page_media {
   /**
    * The official titles of the media in various languages
    */
-  title: AnimeList_Page_media_title;
+  title: MediaTitle;
   /**
    * The cover images of the media
    */
-  coverImage: AnimeList_Page_media_coverImage;
+  coverImage: MediaCoverImage;
   /**
    * The genres of the media
    */

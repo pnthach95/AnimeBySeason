@@ -42,7 +42,7 @@ const MEDIA_SEASONS: MediaSeason[] = [
 
 const YEARS = (() => {
   const a = [];
-  for (let i = 2010; i < dayjs().year(); i++) {
+  for (let i = 2010; i < dayjs().year() + 2; i++) {
     a.push(i);
   }
   return a;
@@ -85,6 +85,7 @@ const GET_DATA = gql`
         }
         coverImage {
           medium
+          large
           color
         }
         genres
@@ -205,7 +206,8 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
             {item.format === MediaFormat.TV && (
               <Text>Episodes: {item.episodes || 0}</Text>
             )}
-            <Text>{item.format}</Text>
+            <Text variant="labelSmall">{item.format}</Text>
+            <Text variant="labelSmall">{item.genres.join(', ')}</Text>
           </View>
         </View>
       </TouchableRipple>
@@ -254,6 +256,14 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
 
   return (
     <>
+      <FlatList
+        data={data?.Page.media || []}
+        ItemSeparatorComponent={Separator}
+        ListEmptyComponent={listEmpty}
+        refreshControl={RC}
+        renderItem={renderItem}
+        onEndReached={onEndReached}
+      />
       <Appbar.Header className="justify-evenly">
         <Menu
           anchor={
@@ -337,14 +347,6 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
           })}
         </Menu>
       </Appbar.Header>
-      <FlatList
-        data={data?.Page.media || []}
-        ItemSeparatorComponent={Separator}
-        ListEmptyComponent={listEmpty}
-        refreshControl={RC}
-        renderItem={renderItem}
-        onEndReached={onEndReached}
-      />
     </>
   );
 };

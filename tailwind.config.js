@@ -10,6 +10,7 @@ module.exports = {
       },
       aspectRatio: {
         poster: '5/7',
+        banner: '19/4',
       },
     },
   },
