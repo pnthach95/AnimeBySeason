@@ -1,13 +1,20 @@
 import {gql, useQuery} from '@apollo/client';
+import {
+  BottomSheetFlatList,
+  BottomSheetModal,
+  useBottomSheetDynamicSnapPoints,
+} from '@gorhom/bottom-sheet';
+import CustomBackdrop from 'components/sheet/backdrop';
+import CustomBackground from 'components/sheet/background';
+import CustomHandle from 'components/sheet/handle';
 import dayjs from 'dayjs';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {FlatList, RefreshControl, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   ActivityIndicator,
   Appbar,
   HelperText,
-  Menu,
   Text,
   TouchableRipple,
   useTheme,
@@ -113,13 +120,18 @@ const getInitSeason = () => {
 const Separator = () => <View className="h-3" />;
 
 const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
+  const initialSnapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
+  const seasonSheetRef = useRef<BottomSheetModal>(null);
+  const seasonYearSheetRef = useRef<BottomSheetModal>(null);
+  const formatSheetRef = useRef<BottomSheetModal>(null);
+  const {
+    animatedHandleHeight,
+    animatedSnapPoints,
+    animatedContentHeight,
+    handleContentLayout,
+  } = useBottomSheetDynamicSnapPoints(initialSnapPoints);
   const {colors} = useTheme();
   const [refreshing, setRefreshing] = useState(false);
-  const [visibles, setVisibles] = useImmer({
-    season: false,
-    seasonYear: false,
-    format: false,
-  });
   const [query, setQuery] = useImmer<TQuery>({
     season: getInitSeason(),
     seasonYear: dayjs().year(),
@@ -224,35 +236,11 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
     });
   };
 
-  const onShowSeason = () =>
-    setVisibles(draft => {
-      draft.season = true;
-    });
+  const onShowSeason = () => seasonSheetRef.current?.present();
 
-  const onDismissSeason = () =>
-    setVisibles(draft => {
-      draft.season = false;
-    });
+  const onShowSeasonYear = () => seasonYearSheetRef.current?.present();
 
-  const onShowSeasonYear = () =>
-    setVisibles(draft => {
-      draft.seasonYear = true;
-    });
-
-  const onDismissSeasonYear = () =>
-    setVisibles(draft => {
-      draft.seasonYear = false;
-    });
-
-  const onShowFormat = () =>
-    setVisibles(draft => {
-      draft.format = true;
-    });
-
-  const onDismissFormat = () =>
-    setVisibles(draft => {
-      draft.format = false;
-    });
+  const onShowFormat = () => formatSheetRef.current?.present();
 
   return (
     <>
@@ -265,88 +253,113 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         onEndReached={onEndReached}
       />
       <Appbar.Header className="justify-evenly">
-        <Menu
-          anchor={
-            <TouchableRipple onPress={onShowSeason}>
-              <Text>Season {query.season}</Text>
-            </TouchableRipple>
-          }
-          visible={visibles.season}
-          onDismiss={onDismissSeason}>
-          {MEDIA_SEASONS.map(m => {
+        <TouchableRipple onPress={onShowSeason}>
+          <Text>Season {query.season}</Text>
+        </TouchableRipple>
+        <TouchableRipple onPress={onShowSeasonYear}>
+          <Text>Year {query.seasonYear}</Text>
+        </TouchableRipple>
+        <TouchableRipple onPress={onShowFormat}>
+          <Text>Format</Text>
+        </TouchableRipple>
+      </Appbar.Header>
+      <BottomSheetModal
+        ref={seasonSheetRef}
+        enablePanDownToClose
+        backdropComponent={CustomBackdrop}
+        backgroundComponent={CustomBackground}
+        contentHeight={animatedContentHeight}
+        handleComponent={CustomHandle}
+        handleHeight={animatedHandleHeight}
+        snapPoints={animatedSnapPoints}>
+        <BottomSheetFlatList
+          data={MEDIA_SEASONS}
+          renderItem={({item}) => {
             const onPress = () => {
-              onDismissSeason();
               setQuery(draft => {
-                draft.season = m;
+                draft.season = item;
                 draft.page = 1;
               });
+              seasonSheetRef.current?.dismiss();
             };
-            return <Menu.Item key={m} title={m} onPress={onPress} />;
-          })}
-        </Menu>
-        <Menu
-          anchor={
-            <TouchableRipple onPress={onShowSeasonYear}>
-              <Text>Year {query.seasonYear}</Text>
-            </TouchableRipple>
-          }
-          visible={visibles.seasonYear}
-          onDismiss={onDismissSeasonYear}>
-          {YEARS.map(m => {
+            return (
+              <TouchableRipple className="p-3" onPress={onPress}>
+                <Text>{item}</Text>
+              </TouchableRipple>
+            );
+          }}
+          onLayout={handleContentLayout}
+        />
+      </BottomSheetModal>
+      <BottomSheetModal
+        ref={seasonYearSheetRef}
+        enablePanDownToClose
+        backdropComponent={CustomBackdrop}
+        backgroundComponent={CustomBackground}
+        contentHeight={animatedContentHeight}
+        handleComponent={CustomHandle}
+        handleHeight={animatedHandleHeight}
+        snapPoints={animatedSnapPoints}>
+        <BottomSheetFlatList
+          data={YEARS}
+          renderItem={({item}) => {
             const onPress = () => {
-              onDismissSeasonYear();
               setQuery(draft => {
-                draft.seasonYear = m;
+                draft.seasonYear = item;
                 draft.page = 1;
               });
+              seasonYearSheetRef.current?.dismiss();
             };
-            return <Menu.Item key={m} title={m} onPress={onPress} />;
-          })}
-        </Menu>
-        <Menu
-          anchor={
-            <TouchableRipple onPress={onShowFormat}>
-              <Text>Format</Text>
-            </TouchableRipple>
-          }
-          visible={visibles.format}
-          onDismiss={onDismissFormat}>
-          {MEDIA_FORMATS.map(m => {
+            return (
+              <TouchableRipple className="p-3" onPress={onPress}>
+                <Text>{item}</Text>
+              </TouchableRipple>
+            );
+          }}
+          onLayout={handleContentLayout}
+        />
+      </BottomSheetModal>
+      <BottomSheetModal
+        ref={formatSheetRef}
+        enablePanDownToClose
+        backdropComponent={CustomBackdrop}
+        backgroundComponent={CustomBackground}
+        contentHeight={animatedContentHeight}
+        handleComponent={CustomHandle}
+        handleHeight={animatedHandleHeight}
+        snapPoints={animatedSnapPoints}>
+        <BottomSheetFlatList
+          data={MEDIA_FORMATS}
+          renderItem={({item}) => {
             const onPress = () => {
-              onDismissFormat();
               setQuery(draft => {
-                if (draft.format.includes(m)) {
-                  const index = draft.format.findIndex(mm => mm === m);
+                if (draft.format.includes(item)) {
+                  const index = draft.format.findIndex(mm => mm === item);
                   if (index !== -1) {
                     draft.format.splice(index, 1);
                   }
                 } else {
-                  draft.format.push(m);
+                  draft.format.push(item);
                 }
                 draft.page = 1;
               });
             };
             return (
-              <Menu.Item
-                key={m}
-                title={m}
-                trailingIcon={
-                  query.format.includes(m)
-                    ? () => (
-                        <Icon
-                          color={colors.onBackground}
-                          name="check"
-                          size={20}
-                        />
-                      )
-                    : undefined
-                }
-                onPress={onPress}
-              />
+              <TouchableRipple
+                className="flex-row justify-between p-3"
+                onPress={onPress}>
+                <>
+                  <Text>{item}</Text>
+                  {query.format.includes(item) ? (
+                    <Icon color={colors.onBackground} name="check" size={20} />
+                  ) : undefined}
+                </>
+              </TouchableRipple>
             );
-          })}
-        </Menu>
-      </Appbar.Header>
+          }}
+          onLayout={handleContentLayout}
+        />
+      </BottomSheetModal>
     </>
   );
 };

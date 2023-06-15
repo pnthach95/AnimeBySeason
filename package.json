@@ -13,6 +13,7 @@
   "dependencies": {
     "@apollo/client": "^3.7.15",
     "@codler/react-native-keyboard-aware-scroll-view": "^2.0.1",
+    "@gorhom/bottom-sheet": "^4.4.7",
     "@react-native-community/hooks": "^3.0.0",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",

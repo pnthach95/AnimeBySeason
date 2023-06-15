@@ -1,5 +1,6 @@
 import 'locales';
 import {ApolloProvider} from '@apollo/client';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {client} from 'api';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -41,12 +42,14 @@ const App = () => {
       <SafeAreaProvider>
         <PaperProvider
           theme={appTheme === 'dark' ? appMaterialDark : appMaterialLight}>
-          <ErrorBoundary FallbackComponent={ErrorBoundaryScreen}>
-            <ApolloProvider client={client}>
-              <Routes />
-            </ApolloProvider>
-            <FlashMessage position="top" />
-          </ErrorBoundary>
+          <BottomSheetModalProvider>
+            <ErrorBoundary FallbackComponent={ErrorBoundaryScreen}>
+              <ApolloProvider client={client}>
+                <Routes />
+              </ApolloProvider>
+              <FlashMessage position="top" />
+            </ErrorBoundary>
+          </BottomSheetModalProvider>
         </PaperProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
