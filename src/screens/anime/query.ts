@@ -83,6 +83,26 @@ export const QUERY = gql`
       bannerImage
       genres
       format
+      relations {
+        edges {
+          id
+          relationType(version: 2)
+          node {
+            id
+            title {
+              romaji
+              english
+              native
+            }
+            format
+            type
+            coverImage {
+              large
+              medium
+            }
+          }
+        }
+      }
       isAdult
     }
   }

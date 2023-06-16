@@ -1,8 +1,10 @@
 import {
   CharacterRole,
   MediaFormat,
+  MediaRelation,
   MediaSource,
   MediaStatus,
+  MediaType,
 } from 'typings/globalTypes';
 
 // ====================================================
@@ -194,7 +196,57 @@ export interface Anime_Media_studios_nodes {
 
 export interface Anime_Media_studios {
   __typename: 'StudioConnection';
-  nodes: Anime_Media_studios_nodes[] | null;
+  nodes: Anime_Media_studios_nodes[];
+}
+
+export interface Anime_Media_relations_edges_node {
+  __typename: 'Media';
+  /**
+   * The id of the media
+   */
+  id: number;
+  /**
+   * The official titles of the media in various languages
+   */
+  title: MediaTitle;
+  /**
+   * The format the media was released in
+   */
+  format: MediaFormat | null;
+  /**
+   * The type of the media; anime or manga
+   */
+  type: MediaType | null;
+  /**
+   * The current releasing status of the media
+   */
+  status: MediaStatus | null;
+  /**
+   * The banner image of the media
+   */
+  bannerImage: string | null;
+  /**
+   * The cover images of the media
+   */
+  coverImage: MediaCoverImage;
+}
+
+export interface Anime_Media_relations_edges {
+  __typename: 'MediaEdge';
+  /**
+   * The id of the connection
+   */
+  id: number;
+  /**
+   * The type of relation to the parent model
+   */
+  relationType: MediaRelation;
+  node: Anime_Media_relations_edges_node;
+}
+
+export interface Anime_Media_relations {
+  __typename: 'MediaConnection';
+  edges: Anime_Media_relations_edges[];
 }
 
 export interface Anime_Media {
@@ -267,6 +319,10 @@ export interface Anime_Media {
    * The genres of the media
    */
   genres: string[];
+  /**
+   * Other media in the same or connecting franchise
+   */
+  relations: Anime_Media_relations | null;
   /**
    * If the media is intended only for 18+ adult audiences
    */

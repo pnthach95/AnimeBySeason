@@ -1,4 +1,5 @@
 import {useQuery} from '@apollo/client';
+import TextRow from 'components/textrow';
 import dayjs from 'dayjs';
 import React from 'react';
 import {FlatList, View, useWindowDimensions} from 'react-native';
@@ -12,16 +13,21 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import RenderHtml from 'react-native-render-html';
+import {normalizeEnumName} from 'utils';
+import AppStyles from 'utils/styles';
 import Person from './person';
 import {QUERY} from './query';
 import type {
   Anime,
   AnimeVariables,
   Anime_Media_characters_edges,
+  Anime_Media_relations_edges,
   Anime_Media_staff_nodes,
 } from './types';
 import type {ListRenderItem} from 'react-native';
 import type {RootStackScreenProps} from 'typings/navigation';
+
+const Separator = () => <View className="w-3" />;
 
 const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
   const translationY = useSharedValue(0);
@@ -30,6 +36,7 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
   const {data} = useQuery<Anime, AnimeVariables>(QUERY, {
     variables: {id: route.params.item.id},
   });
+  const baseStyle = {color: colors.onBackground, padding: 12};
 
   const renderCharacter: ListRenderItem<Anime_Media_characters_edges> = ({
     item,
@@ -80,6 +87,22 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
     };
   });
 
+  const renderRelation: ListRenderItem<Anime_Media_relations_edges> = ({
+    item,
+  }): React.JSX.Element => {
+    return (
+      <View className="items-center">
+        <FastImage
+          className="aspect-poster w-20"
+          source={{uri: item.node.coverImage.medium || ''}}
+        />
+        <Text>{normalizeEnumName(item.relationType)}</Text>
+        <Text>{item.node.title.romaji}</Text>
+        <Text variant="bodySmall">{normalizeEnumName(item.node.format)}</Text>
+      </View>
+    );
+  };
+
   return (
     <>
       <Animated.View
@@ -121,65 +144,97 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
         )}
         {data && (
           <View className="my-3">
-            <Text selectable>English title: {data.Media.title.english}</Text>
-            <Text>Source: {data.Media.source}</Text>
-            <Text>Format: {data.Media.format}</Text>
-            <Text>Status: {data.Media.status}</Text>
-            {data.Media.startDate &&
-              !!data.Media.startDate.day &&
-              !!data.Media.startDate.month &&
-              !!data.Media.startDate.year && (
-                <Text>
-                  Start date:{' '}
-                  {dayjs()
-                    .date(data.Media.startDate.day)
-                    .month(data.Media.startDate.month)
-                    .year(data.Media.startDate.year)
-                    .format('ll')}
-                </Text>
+            <View className="space-y-1 px-3 pb-3">
+              <TextRow label="English title">
+                {data.Media.title.english}
+              </TextRow>
+              <TextRow label="Format">
+                {normalizeEnumName(data.Media.format)}
+              </TextRow>
+              {!!data.Media.episodes && (
+                <TextRow label="Episodes">{data.Media.episodes}</TextRow>
               )}
-            {data.Media.endDate &&
-              !!data.Media.endDate.day &&
-              !!data.Media.endDate.month &&
-              !!data.Media.endDate.year && (
-                <Text>
-                  End date:{' '}
-                  {dayjs()
-                    .date(data.Media.endDate.day)
-                    .month(data.Media.endDate.month)
-                    .year(data.Media.endDate.year)
-                    .format('ll')}
-                </Text>
-              )}
-            <Text>Duration: {data.Media.duration || 0} minutes</Text>
-            <Text>Genres: {data.Media.genres.join(', ')}</Text>
-            <Text>Tags: {data.Media.tags.map(t => t.name).join(', ')}</Text>
-            <View className="flex-row justify-between">
-              <Text>Studios</Text>
-              <Text className="text-right">
-                {data.Media.studios.nodes?.map(s => s.name).join('\n')}
-              </Text>
+              <TextRow label="Duration">
+                {`${data.Media.duration || 0} mins`}
+              </TextRow>
+              <TextRow label="Status">
+                {normalizeEnumName(data.Media.status)}
+              </TextRow>
+              {data.Media.startDate &&
+                !!data.Media.startDate.day &&
+                !!data.Media.startDate.month &&
+                !!data.Media.startDate.year && (
+                  <TextRow label="Start date">
+                    {dayjs()
+                      .date(data.Media.startDate.day)
+                      .month(data.Media.startDate.month)
+                      .year(data.Media.startDate.year)
+                      .format('ll')}
+                  </TextRow>
+                )}
+              {data.Media.endDate &&
+                !!data.Media.endDate.day &&
+                !!data.Media.endDate.month &&
+                !!data.Media.endDate.year && (
+                  <TextRow label="End date">
+                    {dayjs()
+                      .date(data.Media.endDate.day)
+                      .month(data.Media.endDate.month)
+                      .year(data.Media.endDate.year)
+                      .format('ll')}
+                  </TextRow>
+                )}
+              <TextRow label="Studios">
+                {data.Media.studios.nodes.map(s => s.name).join('\n')}
+              </TextRow>
+              <TextRow label="Source">
+                {normalizeEnumName(data.Media.source)}
+              </TextRow>
+              <TextRow label="Genres">{data.Media.genres.join(', ')}</TextRow>
+              <TextRow label="Tags">
+                {data.Media.tags.map(t => t.name).join(', ')}
+              </TextRow>
+              <Text variant="labelMedium">Characters</Text>
             </View>
-            <Text>Characters</Text>
             <FlatList
               horizontal
+              contentContainerStyle={AppStyles.paddingHorizontal}
               data={data.Media.characters.edges || []}
-              ItemSeparatorComponent={() => <View className="w-3" />}
+              ItemSeparatorComponent={Separator}
               renderItem={renderCharacter}
               showsHorizontalScrollIndicator={false}
             />
-            <Text>Staffs</Text>
+            <Text className="p-3" variant="labelMedium">
+              Staffs
+            </Text>
             <FlatList
               horizontal
+              contentContainerStyle={AppStyles.paddingHorizontal}
               data={data.Media.staff.nodes}
+              ItemSeparatorComponent={Separator}
               renderItem={renderStaff}
               showsHorizontalScrollIndicator={false}
             />
             <RenderHtml
-              baseStyle={{color: colors.onBackground}}
+              baseStyle={baseStyle}
               contentWidth={width}
               source={{html: data.Media.description}}
             />
+            {data.Media.relations && (
+              <>
+                <Text className="mx-3 mb-3" variant="labelMedium">
+                  Relations
+                </Text>
+                <FlatList
+                  horizontal
+                  contentContainerStyle={AppStyles.paddingHorizontal}
+                  data={data.Media.relations.edges}
+                  ItemSeparatorComponent={Separator}
+                  renderItem={renderRelation}
+                  showsHorizontalScrollIndicator={false}
+                />
+              </>
+            )}
           </View>
         )}
       </Animated.ScrollView>

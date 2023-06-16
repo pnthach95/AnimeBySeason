@@ -27,6 +27,25 @@ export enum MediaFormat {
   TV_SHORT = 'TV_SHORT',
 }
 
+/**
+ * Type of relation media has to its parent.
+ */
+export enum MediaRelation {
+  ADAPTATION = 'ADAPTATION',
+  ALTERNATIVE = 'ALTERNATIVE',
+  CHARACTER = 'CHARACTER',
+  COMPILATION = 'COMPILATION',
+  CONTAINS = 'CONTAINS',
+  OTHER = 'OTHER',
+  PARENT = 'PARENT',
+  PREQUEL = 'PREQUEL',
+  SEQUEL = 'SEQUEL',
+  SIDE_STORY = 'SIDE_STORY',
+  SOURCE = 'SOURCE',
+  SPIN_OFF = 'SPIN_OFF',
+  SUMMARY = 'SUMMARY',
+}
+
 export enum MediaSeason {
   FALL = 'FALL',
   SPRING = 'SPRING',

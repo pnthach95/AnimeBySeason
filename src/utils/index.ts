@@ -25,3 +25,12 @@ export const openLink = (link?: string) => {
     }
   }
 };
+
+export const normalizeEnumName = (str: string | null) => {
+  if (str) {
+    return capitalizeFirstLetter(
+      str.toLowerCase().replaceAll('_', ' ').replace('tv', 'TV'),
+    );
+  }
+  return '';
+};
