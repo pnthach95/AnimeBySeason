@@ -3,7 +3,7 @@ import {colord} from 'colord';
 import TextRow from 'components/textrow';
 import dayjs from 'dayjs';
 import React from 'react';
-import {FlatList, View, useWindowDimensions} from 'react-native';
+import {FlatList, StatusBar, View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   ActivityIndicator,
@@ -22,9 +22,10 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import RenderHtml from 'react-native-render-html';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {MediaType} from 'typings/globalTypes';
 import {normalizeEnumName} from 'utils';
-import AppStyles from 'utils/styles';
+import AppStyles, {useSafeAreaPaddingTop} from 'utils/styles';
 import Person from './person';
 import {QUERY} from './query';
 import type {
@@ -46,6 +47,8 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
   const {data, loading, error} = useQuery<Anime, AnimeVariables>(QUERY, {
     variables: {id: route.params.item.id},
   });
+  const insets = useSafeAreaInsets();
+  const paddingTop = useSafeAreaPaddingTop();
   const baseStyle = {color: colors.onBackground, padding: 12};
   const isColorDark = route.params.item.coverImage.color
     ? colord(route.params.item.coverImage.color).isDark()
@@ -93,7 +96,7 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
     return {
       opacity: interpolate(
         translationY.value,
-        [0, 50],
+        [0, 56 - insets.top],
         [0, 1],
         Extrapolation.CLAMP,
       ),
@@ -131,26 +134,35 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
 
   return (
     <>
-      <Appbar.BackAction className="absolute" />
+      <StatusBar translucent backgroundColor="transparent" />
+      <View style={paddingTop} />
+      <View className="absolute" style={paddingTop}>
+        <View className="h-14 flex-row items-center">
+          <Appbar.BackAction />
+        </View>
+      </View>
       <Animated.View
-        className="absolute z-10 h-14 w-full flex-row justify-center"
+        className="absolute z-10 w-full"
         style={[
           {
             backgroundColor:
               route.params.item.coverImage.color || colors.background,
           },
+          paddingTop,
           stylez,
         ]}>
-        <Appbar.BackAction
-          color={isColorDark ? 'white' : 'black'}
-          onPress={navigation.goBack}
-        />
-        <Text
-          className={`flex-1 ${isColorDark ? 'text-white' : 'text-black'}`}
-          numberOfLines={2}
-          variant="titleLarge">
-          {route.params.item.title.romaji}
-        </Text>
+        <View className="h-14 flex-row items-center">
+          <Appbar.BackAction
+            color={isColorDark ? 'white' : 'black'}
+            onPress={navigation.goBack}
+          />
+          <Text
+            className={`flex-1 ${isColorDark ? 'text-white' : 'text-black'}`}
+            numberOfLines={2}
+            variant="titleLarge">
+            {route.params.item.title.romaji}
+          </Text>
+        </View>
       </Animated.View>
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
@@ -248,7 +260,7 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
             <FlatList
               horizontal
               contentContainerStyle={AppStyles.paddingHorizontal}
-              data={data.Media.staff.nodes}
+              data={Array.from(new Set(data.Media.staff.nodes))}
               ItemSeparatorComponent={Separator}
               renderItem={renderStaff}
               showsHorizontalScrollIndicator={false}
