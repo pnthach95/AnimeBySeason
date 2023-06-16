@@ -1,4 +1,4 @@
-import {gql, useQuery} from '@apollo/client';
+import {useQuery} from '@apollo/client';
 import {
   BottomSheetFlatList,
   BottomSheetModal,
@@ -27,6 +27,7 @@ import {
   MediaType,
 } from 'typings/globalTypes';
 import {useImmer} from 'use-immer';
+import {QUERY} from './query';
 import type {AnimeList, AnimeList_Page_media} from './types';
 import type {ListRenderItem} from 'react-native';
 import type {MainTabScreenProps} from 'typings/navigation';
@@ -65,44 +66,6 @@ const MEDIA_FORMATS: MediaFormat[] = [
   MediaFormat.MOVIE,
   MediaFormat.MUSIC,
 ];
-
-const GET_DATA = gql`
-  query AnimeList(
-    $season: MediaSeason
-    $seasonYear: Int
-    $sort: [MediaSort]
-    $page: Int
-    $type: MediaType
-    $format: [MediaFormat]
-  ) {
-    Page(page: $page, perPage: 20) {
-      media(
-        season: $season
-        seasonYear: $seasonYear
-        sort: $sort
-        type: $type
-        format_in: $format
-      ) {
-        id
-        episodes
-        title {
-          romaji
-          english
-          native
-        }
-        bannerImage
-        coverImage {
-          medium
-          large
-          color
-        }
-        genres
-        format
-        isAdult
-      }
-    }
-  }
-`;
 
 const getInitSeason = () => {
   const month = dayjs().month();
@@ -144,7 +107,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
   const {loading, data, previousData, error, refetch, fetchMore} = useQuery<
     AnimeList,
     TQuery
-  >(GET_DATA, {
+  >(QUERY, {
     variables: query,
   });
 
