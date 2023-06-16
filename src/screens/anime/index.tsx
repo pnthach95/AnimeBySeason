@@ -1,4 +1,4 @@
-import {gql, useQuery} from '@apollo/client';
+import {useQuery} from '@apollo/client';
 import dayjs from 'dayjs';
 import React from 'react';
 import {FlatList, View, useWindowDimensions} from 'react-native';
@@ -13,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import RenderHtml from 'react-native-render-html';
 import Person from './person';
+import {QUERY} from './query';
 import type {
   Anime,
   AnimeVariables,
@@ -22,99 +23,11 @@ import type {
 import type {ListRenderItem} from 'react-native';
 import type {RootStackScreenProps} from 'typings/navigation';
 
-const GET_DATA = gql`
-  query Anime($id: Int) {
-    Media(id: $id) {
-      id
-      episodes
-      title {
-        romaji
-        english
-        native
-      }
-      format
-      status(version: 2)
-      description(asHtml: false)
-      startDate {
-        year
-        month
-        day
-      }
-      endDate {
-        year
-        month
-        day
-      }
-      duration
-      source(version: 3)
-      tags {
-        id
-        name
-      }
-      characters {
-        edges {
-          id
-          role
-          name
-          voiceActors(language: JAPANESE, sort: [RELEVANCE, ID]) {
-            id
-            name {
-              userPreferred
-            }
-            language: languageV2
-            image {
-              large
-            }
-          }
-          node {
-            id
-            name {
-              userPreferred
-            }
-            image {
-              large
-            }
-          }
-        }
-      }
-      staff {
-        nodes {
-          id
-          name {
-            full
-            native
-            userPreferred
-          }
-          image {
-            large
-          }
-          primaryOccupations
-        }
-      }
-      studios {
-        nodes {
-          id
-          name
-        }
-      }
-      coverImage {
-        large
-        medium
-        color
-      }
-      bannerImage
-      genres
-      format
-      isAdult
-    }
-  }
-`;
-
 const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
   const translationY = useSharedValue(0);
   const {width} = useWindowDimensions();
   const {colors} = useTheme();
-  const {data} = useQuery<Anime, AnimeVariables>(GET_DATA, {
+  const {data} = useQuery<Anime, AnimeVariables>(QUERY, {
     variables: {id: route.params.item.id},
   });
 
