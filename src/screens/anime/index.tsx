@@ -1,10 +1,19 @@
 import {useQuery} from '@apollo/client';
+import {colord} from 'colord';
 import TextRow from 'components/textrow';
 import dayjs from 'dayjs';
 import React from 'react';
 import {FlatList, View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {Surface, Text, useTheme} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Appbar,
+  HelperText,
+  Surface,
+  Text,
+  TouchableRipple,
+  useTheme,
+} from 'react-native-paper';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -13,6 +22,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import RenderHtml from 'react-native-render-html';
+import {MediaType} from 'typings/globalTypes';
 import {normalizeEnumName} from 'utils';
 import AppStyles from 'utils/styles';
 import Person from './person';
@@ -29,14 +39,17 @@ import type {RootStackScreenProps} from 'typings/navigation';
 
 const Separator = () => <View className="w-3" />;
 
-const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
+const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
   const translationY = useSharedValue(0);
   const {width} = useWindowDimensions();
-  const {colors} = useTheme();
-  const {data} = useQuery<Anime, AnimeVariables>(QUERY, {
+  const {colors, dark} = useTheme();
+  const {data, loading, error} = useQuery<Anime, AnimeVariables>(QUERY, {
     variables: {id: route.params.item.id},
   });
   const baseStyle = {color: colors.onBackground, padding: 12};
+  const isColorDark = route.params.item.coverImage.color
+    ? colord(route.params.item.coverImage.color).isDark()
+    : dark;
 
   const renderCharacter: ListRenderItem<Anime_Media_characters_edges> = ({
     item,
@@ -89,24 +102,38 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
 
   const renderRelation: ListRenderItem<Anime_Media_relations_edges> = ({
     item,
-  }): React.JSX.Element => {
+  }) => {
+    const onPress = () => {
+      navigation.push('Anime', {item: item.node});
+    };
+
     return (
-      <View className="items-center">
-        <FastImage
-          className="aspect-poster w-20"
-          source={{uri: item.node.coverImage.medium || ''}}
-        />
-        <Text>{normalizeEnumName(item.relationType)}</Text>
-        <Text>{item.node.title.romaji}</Text>
-        <Text variant="bodySmall">{normalizeEnumName(item.node.format)}</Text>
-      </View>
+      <Surface className="max-w-[180px] rounded-xl">
+        <TouchableRipple
+          borderless
+          className="rounded-xl"
+          onPress={item.node.type === MediaType.ANIME ? onPress : undefined}>
+          <View className="items-center space-y-1 p-3">
+            <Text>{normalizeEnumName(item.relationType)}</Text>
+            <FastImage
+              className="aspect-poster w-20"
+              source={{uri: item.node.coverImage.medium || ''}}
+            />
+            <Text className="text-center">{item.node.title.romaji}</Text>
+            <Text variant="bodySmall">
+              {normalizeEnumName(item.node.format)}
+            </Text>
+          </View>
+        </TouchableRipple>
+      </Surface>
     );
   };
 
   return (
     <>
+      <Appbar.BackAction className="absolute" />
       <Animated.View
-        className="absolute z-10 h-14 w-full justify-center"
+        className="absolute z-10 h-14 w-full flex-row justify-center"
         style={[
           {
             backgroundColor:
@@ -114,15 +141,24 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
           },
           stylez,
         ]}>
-        <Text className="ml-12" numberOfLines={2} variant="titleLarge">
+        <Appbar.BackAction
+          color={isColorDark ? 'white' : 'black'}
+          onPress={navigation.goBack}
+        />
+        <Text
+          className={`flex-1 ${isColorDark ? 'text-white' : 'text-black'}`}
+          numberOfLines={2}
+          variant="titleLarge">
           {route.params.item.title.romaji}
         </Text>
       </Animated.View>
-      <Animated.ScrollView onScroll={scrollHandler}>
-        {data && !!data.Media.bannerImage ? (
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        onScroll={scrollHandler}>
+        {route.params.item.bannerImage ? (
           <FastImage
             className="aspect-banner w-full"
-            source={{uri: data.Media.bannerImage}}
+            source={{uri: route.params.item.bannerImage}}
           />
         ) : (
           <View className="h-14 w-full" />
@@ -142,12 +178,14 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
             }}
           />
         )}
-        {data && (
+        {data ? (
           <View className="my-3">
             <View className="space-y-1 px-3 pb-3">
-              <TextRow label="English title">
-                {data.Media.title.english}
-              </TextRow>
+              {!!data.Media.title.english && (
+                <TextRow label="English title">
+                  {data.Media.title.english}
+                </TextRow>
+              )}
               <TextRow label="Format">
                 {normalizeEnumName(data.Media.format)}
               </TextRow>
@@ -236,6 +274,24 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
               </>
             )}
           </View>
+        ) : loading ? (
+          <ActivityIndicator className="m-3" size="large" />
+        ) : (
+          error && (
+            <HelperText type="error">
+              {(
+                (
+                  error?.networkError as unknown as {
+                    result: {errors: {message: string}[]};
+                  }
+                ).result as {
+                  errors: {message: string}[];
+                }
+              ).errors
+                .map(e => e.message)
+                .join(', ')}
+            </HelperText>
+          )
         )}
       </Animated.ScrollView>
     </>

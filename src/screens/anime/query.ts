@@ -97,6 +97,7 @@ export const QUERY = gql`
             format
             type
             coverImage {
+              color
               large
               medium
             }

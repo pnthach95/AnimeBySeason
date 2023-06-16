@@ -58,7 +58,7 @@ const Routes = () => {
         <RootStack.Screen
           component={AnimeScreen}
           name="Anime"
-          options={{headerTransparent: true, title: ''}}
+          options={{headerShown: false}}
         />
         <RootStack.Screen
           component={GalleryScreen}

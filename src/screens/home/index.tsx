@@ -90,6 +90,7 @@ const GET_DATA = gql`
           english
           native
         }
+        bannerImage
         coverImage {
           medium
           large

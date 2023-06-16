@@ -10,7 +10,6 @@ import {
 // ====================================================
 
 export interface AnimeList_Page_media {
-  __typename: 'Media';
   /**
    * The id of the media
    */
@@ -28,6 +27,10 @@ export interface AnimeList_Page_media {
    */
   coverImage: MediaCoverImage;
   /**
+   * The banner image of the media
+   */
+  bannerImage: string | null;
+  /**
    * The genres of the media
    */
   genres: string[];
@@ -42,7 +45,6 @@ export interface AnimeList_Page_media {
 }
 
 export interface AnimeList_Page {
-  __typename: 'Page';
   media: AnimeList_Page_media[];
 }
 

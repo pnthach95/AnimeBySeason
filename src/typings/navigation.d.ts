@@ -4,12 +4,28 @@ import type {
   NavigatorScreenParams,
 } from '@react-navigation/native';
 import type {StackScreenProps} from '@react-navigation/stack';
-import type {AnimeList_Page_media} from 'screens/home/types';
 
 type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
   Anime: {
-    item: AnimeList_Page_media;
+    item: {
+      /**
+       * The id of the media
+       */
+      id: number;
+      /**
+       * The official titles of the media in various languages
+       */
+      title: MediaTitle;
+      /**
+       * The cover images of the media
+       */
+      coverImage: MediaCoverImage;
+      /**
+       * The banner image of the media
+       */
+      bannerImage: string | null;
+    };
   };
   Gallery: {
     idx: number;
