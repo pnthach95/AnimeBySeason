@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import React from 'react';
 import {FlatList, View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {Text, useTheme} from 'react-native-paper';
+import {Surface, Text, useTheme} from 'react-native-paper';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -16,7 +16,7 @@ import Person from './person';
 import type {
   Anime,
   AnimeVariables,
-  Anime_Media_characters_nodes,
+  Anime_Media_characters_edges,
   Anime_Media_staff_nodes,
 } from './types';
 import type {ListRenderItem} from 'react-native';
@@ -33,7 +33,7 @@ const GET_DATA = gql`
         native
       }
       format
-      status
+      status(version: 2)
       description(asHtml: false)
       startDate {
         year
@@ -46,21 +46,34 @@ const GET_DATA = gql`
         day
       }
       duration
-      source
+      source(version: 3)
       tags {
         id
         name
       }
       characters {
-        nodes {
+        edges {
           id
-          name {
-            full
-            native
-            userPreferred
+          role
+          name
+          voiceActors(language: JAPANESE, sort: [RELEVANCE, ID]) {
+            id
+            name {
+              userPreferred
+            }
+            language: languageV2
+            image {
+              large
+            }
           }
-          image {
-            large
+          node {
+            id
+            name {
+              userPreferred
+            }
+            image {
+              large
+            }
           }
         }
       }
@@ -105,11 +118,22 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
     variables: {id: route.params.item.id},
   });
 
-  const renderCharacter: ListRenderItem<Anime_Media_characters_nodes> = ({
+  const renderCharacter: ListRenderItem<Anime_Media_characters_edges> = ({
     item,
   }) => {
     return (
-      <Person image={item.image.large || ''} name={item.name.full || ''} />
+      <Surface className="flex-row rounded-xl py-3">
+        <Person
+          image={item.node?.image.large || ''}
+          name={item.node?.name.userPreferred || ''}
+        />
+        {item.voiceActors.map(va => (
+          <Person
+            image={va.image?.large || ''}
+            name={va.name?.userPreferred || ''}
+          />
+        ))}
+      </Surface>
     );
   };
 
@@ -136,7 +160,7 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
     return {
       opacity: interpolate(
         translationY.value,
-        [0, 72],
+        [0, 50],
         [0, 1],
         Extrapolation.CLAMP,
       ),
@@ -226,7 +250,8 @@ const AnimeScreen = ({route}: RootStackScreenProps<'Anime'>) => {
             <Text>Characters</Text>
             <FlatList
               horizontal
-              data={data.Media.characters.nodes || []}
+              data={data.Media.characters.edges || []}
+              ItemSeparatorComponent={() => <View className="w-3" />}
               renderItem={renderCharacter}
               showsHorizontalScrollIndicator={false}
             />

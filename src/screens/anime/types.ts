@@ -1,4 +1,9 @@
-import {MediaFormat, MediaSource, MediaStatus} from 'typings/globalTypes';
+import {
+  CharacterRole,
+  MediaFormat,
+  MediaSource,
+  MediaStatus,
+} from 'typings/globalTypes';
 
 // ====================================================
 // GraphQL query operation: Anime
@@ -32,31 +37,59 @@ export interface Anime_Media_tags {
   name: string;
 }
 
-export interface Anime_Media_characters_nodes_name {
-  __typename: 'CharacterName';
-  /**
-   * The character's first and last name
-   */
-  full: string | null;
-  /**
-   * The character's full name in their native language
-   */
-  native: string | null;
+export interface Anime_Media_characters_edges_voiceActors_name {
+  __typename: 'StaffName';
   /**
    * The currently authenticated users preferred name language. Default romaji for non-authenticated
    */
   userPreferred: string | null;
 }
 
-export interface Anime_Media_characters_nodes_image {
-  __typename: 'CharacterImage';
+export interface Anime_Media_characters_edges_voiceActors_image {
+  __typename: 'StaffImage';
   /**
-   * The character's image of media at its largest size
+   * The person's image of media at its largest size
    */
   large: string | null;
 }
 
-export interface Anime_Media_characters_nodes {
+export interface Anime_Media_characters_edges_voiceActors {
+  __typename: 'Staff';
+  /**
+   * The id of the staff member
+   */
+  id: number;
+  /**
+   * The names of the staff member
+   */
+  name: Anime_Media_characters_edges_voiceActors_name | null;
+  /**
+   * The primary language of the staff member. Current values: Japanese, English, Korean, Italian, Spanish, Portuguese, French, German, Hebrew, Hungarian, Chinese, Arabic, Filipino, Catalan, Finnish, Turkish, Dutch, Swedish, Thai, Tagalog, Malaysian, Indonesian, Vietnamese, Nepali, Hindi, Urdu
+   */
+  language: string | null;
+  /**
+   * The staff images
+   */
+  image: Anime_Media_characters_edges_voiceActors_image | null;
+}
+
+export interface Anime_Media_characters_edges_node_name {
+  __typename: 'CharacterName';
+  /**
+   * The currently authenticated users preferred name language. Default romaji for non-authenticated
+   */
+  userPreferred: string | null;
+}
+
+export interface Anime_Media_characters_edges_node_image {
+  __typename: 'CharacterImage';
+  /**
+   * The character's image of media at its largest size
+   */
+  large: string;
+}
+
+export interface Anime_Media_characters_edges_node {
   __typename: 'Character';
   /**
    * The id of the character
@@ -65,16 +98,37 @@ export interface Anime_Media_characters_nodes {
   /**
    * The names of the character
    */
-  name: Anime_Media_characters_nodes_name;
+  name: Anime_Media_characters_edges_node_name;
   /**
    * Character images
    */
-  image: Anime_Media_characters_nodes_image;
+  image: Anime_Media_characters_edges_node_image;
+}
+
+export interface Anime_Media_characters_edges {
+  __typename: 'CharacterEdge';
+  /**
+   * The id of the connection
+   */
+  id: number;
+  /**
+   * The characters role in the media
+   */
+  role: CharacterRole | null;
+  /**
+   * Media specific character name
+   */
+  name: string | null;
+  /**
+   * The voice actors of the character
+   */
+  voiceActors: Anime_Media_characters_edges_voiceActors[];
+  node: Anime_Media_characters_edges_node | null;
 }
 
 export interface Anime_Media_characters {
   __typename: 'CharacterConnection';
-  nodes: Anime_Media_characters_nodes[] | null;
+  edges: Anime_Media_characters_edges[] | null;
 }
 
 export interface Anime_Media_staff_nodes_name {

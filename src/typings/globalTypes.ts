@@ -3,6 +3,15 @@
 //==============================================================
 
 /**
+ * The role the character plays in the media
+ */
+export enum CharacterRole {
+  BACKGROUND = 'BACKGROUND',
+  MAIN = 'MAIN',
+  SUPPORTING = 'SUPPORTING',
+}
+
+/**
  * The format the media was released in
  */
 export enum MediaFormat {
