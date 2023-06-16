@@ -49,6 +49,7 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
   });
   const insets = useSafeAreaInsets();
   const paddingTop = useSafeAreaPaddingTop();
+  const marginTop = {marginTop: insets.top};
   const baseStyle = {color: colors.onBackground, padding: 12};
   const isColorDark = route.params.item.coverImage.color
     ? colord(route.params.item.coverImage.color).isDark()
@@ -135,8 +136,7 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
-      <View style={paddingTop} />
-      <View className="absolute" style={paddingTop}>
+      <View className="absolute z-10" style={paddingTop}>
         <View className="h-14 flex-row items-center">
           <Appbar.BackAction />
         </View>
@@ -168,12 +168,19 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}>
         {route.params.item.bannerImage ? (
-          <FastImage
-            className="aspect-banner w-full"
-            source={{uri: route.params.item.bannerImage}}
-          />
+          <>
+            <FastImage
+              className="aspect-banner w-full"
+              source={{uri: route.params.item.bannerImage}}
+            />
+            <View
+              className={`absolute aspect-banner w-full ${
+                dark ? 'bg-black/30' : 'bg-white/30'
+              }`}
+            />
+          </>
         ) : (
-          <View className="h-14 w-full" />
+          <View className="h-14 w-full" style={marginTop} />
         )}
         <Text className="mx-3 my-3 text-center" variant="headlineMedium">
           {route.params.item.title.romaji}

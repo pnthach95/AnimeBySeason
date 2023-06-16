@@ -96,6 +96,7 @@ export const QUERY = gql`
             }
             format
             type
+            bannerImage
             coverImage {
               color
               large
