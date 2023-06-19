@@ -11,6 +11,7 @@ import {StatusBar} from 'react-native';
 import CharacterScreen from 'screens/character';
 import GalleryScreen from 'screens/gallery';
 import MediaScreen from 'screens/media';
+import StaffScreen from 'screens/staff';
 import {useAppColorScheme} from 'stores';
 import {navigationDarkTheme, navigationTheme, useAppTheme} from 'utils/themes';
 import MainTab from './tabs';
@@ -62,6 +63,7 @@ const Routes = () => {
           options={{headerShown: false}}
         />
         <RootStack.Screen component={CharacterScreen} name="Character" />
+        <RootStack.Screen component={StaffScreen} name="Staff" />
         <RootStack.Screen
           component={GalleryScreen}
           name="Gallery"

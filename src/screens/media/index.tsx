@@ -75,20 +75,37 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
           name={item.node?.name.userPreferred || ''}
           onPress={onPressCharacter}
         />
-        {item.voiceActors.map(va => (
-          <Person
-            key={`${va.__typename}_${va.id}`}
-            image={va.image?.large || ''}
-            name={va.name?.userPreferred || ''}
-          />
-        ))}
+        {item.voiceActors.map(va => {
+          const onPressVA = () => {
+            navigation.push('Staff', {
+              id: va.id,
+              image: va.image?.large || '',
+              name: va.name?.userPreferred || '',
+            });
+          };
+
+          return (
+            <Person
+              key={`${va.__typename}_${va.id}`}
+              image={va.image?.large || ''}
+              name={va.name?.userPreferred || ''}
+              onPress={onPressVA}
+            />
+          );
+        })}
       </Surface>
     );
   };
 
-  const renderStaff: ListRenderItem<Anime_Media_staff_nodes> = ({
-    item,
-  }): React.JSX.Element => {
+  const renderStaff: ListRenderItem<Anime_Media_staff_nodes> = ({item}) => {
+    const onPress = () => {
+      navigation.push('Staff', {
+        id: item.id,
+        image: item.image?.large || '',
+        name: item.name?.userPreferred || '',
+      });
+    };
+
     return (
       <Person
         image={item.image.large || ''}
@@ -97,6 +114,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
             ? `\n(${item.primaryOccupations?.join(', ')})`
             : ''
         }`}
+        onPress={onPress}
       />
     );
   };

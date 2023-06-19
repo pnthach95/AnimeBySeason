@@ -149,7 +149,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
 
   const renderItem: ListRenderItem<IMediaItem> = ({item}) => {
     const onPress = () => {
-      navigation.navigate('Anime', {item});
+      navigation.navigate('Media', {item});
     };
 
     return (

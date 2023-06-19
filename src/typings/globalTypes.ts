@@ -28,6 +28,18 @@ export enum MediaFormat {
 }
 
 /**
+ * Media list watching/reading status enum.
+ */
+export enum MediaListStatus {
+  COMPLETED = 'COMPLETED',
+  CURRENT = 'CURRENT',
+  DROPPED = 'DROPPED',
+  PAUSED = 'PAUSED',
+  PLANNING = 'PLANNING',
+  REPEATING = 'REPEATING',
+}
+
+/**
  * Type of relation media has to its parent.
  */
 export enum MediaRelation {

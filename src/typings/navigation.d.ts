@@ -32,6 +32,11 @@ type RootStackParamList = {
     image: string;
     name: string;
   };
+  Staff: {
+    id: number;
+    image: string;
+    name: string;
+  };
   Gallery: {
     idx: number;
     images: string[];

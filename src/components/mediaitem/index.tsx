@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {Text, TouchableRipple} from 'react-native-paper';
@@ -10,7 +10,7 @@ type Props = {
   onPress: () => void;
 };
 
-const MediaItem = ({item, onPress}: Props) => {
+const MediaItem = ({item, children, onPress}: PropsWithChildren<Props>) => {
   return (
     <TouchableRipple onPress={onPress}>
       <View className="mx-3 flex-row">
@@ -34,6 +34,7 @@ const MediaItem = ({item, onPress}: Props) => {
           )}
           <Text variant="labelSmall">{normalizeEnumName(item.format)}</Text>
           <Text variant="labelSmall">{item.genres.join(', ')}</Text>
+          {children}
         </View>
       </View>
     </TouchableRipple>

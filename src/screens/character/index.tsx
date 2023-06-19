@@ -23,6 +23,8 @@ type TQuery = {
   id: number;
 };
 
+const Separator = () => <View className="h-3" />;
+
 const CharacterScreen = ({
   navigation,
   route,
@@ -126,22 +128,24 @@ const CharacterScreen = ({
     );
   };
 
+  const listEmpty = () => {
+    if (error) {
+      const text = handleNetworkError(error);
+      return <HelperText type="error">{text}</HelperText>;
+    }
+
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  };
+
   return (
     <FlatList
       data={data?.Character.media?.edges}
-      ItemSeparatorComponent={() => <View className="h-3" />}
-      ListEmptyComponent={() => {
-        if (error) {
-          const text = handleNetworkError(error);
-          return <HelperText type="error">{text}</HelperText>;
-        }
-
-        return (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" />
-          </View>
-        );
-      }}
+      ItemSeparatorComponent={Separator}
+      ListEmptyComponent={listEmpty}
       ListHeaderComponent={header}
       renderItem={renderMedia}
     />
