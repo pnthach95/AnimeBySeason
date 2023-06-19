@@ -23,8 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import RenderHtml from 'react-native-render-html';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {MediaType} from 'typings/globalTypes';
-import {normalizeEnumName} from 'utils';
+import {handleNetworkError, normalizeEnumName} from 'utils';
 import AppStyles, {useSafeAreaPaddingTop} from 'utils/styles';
 import Person from './person';
 import {QUERY} from './query';
@@ -58,14 +57,27 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
   const renderCharacter: ListRenderItem<Anime_Media_characters_edges> = ({
     item,
   }) => {
+    const onPressCharacter = () => {
+      if (item.node) {
+        const {node} = item;
+        navigation.push('Character', {
+          id: node.id,
+          image: node.image.large,
+          name: node.name.userPreferred || '',
+        });
+      }
+    };
+
     return (
       <Surface className="flex-row rounded-xl py-3">
         <Person
           image={item.node?.image.large || ''}
           name={item.node?.name.userPreferred || ''}
+          onPress={onPressCharacter}
         />
         {item.voiceActors.map(va => (
           <Person
+            key={`${va.__typename}_${va.id}`}
             image={va.image?.large || ''}
             name={va.name?.userPreferred || ''}
           />
@@ -115,8 +127,8 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
       <Surface className="max-w-[180px] rounded-xl">
         <TouchableRipple
           borderless
-          className="rounded-xl"
-          onPress={item.node.type === MediaType.ANIME ? onPress : undefined}>
+          className="flex-1 rounded-xl"
+          onPress={onPress}>
           <View className="items-center space-y-1 p-3">
             <Text>{normalizeEnumName(item.relationType)}</Text>
             <FastImage
@@ -256,7 +268,7 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
             <FlatList
               horizontal
               contentContainerStyle={AppStyles.paddingHorizontal}
-              data={data.Media.characters.edges || []}
+              data={Array.from(new Set(data.Media.characters.edges || []))}
               ItemSeparatorComponent={Separator}
               renderItem={renderCharacter}
               showsHorizontalScrollIndicator={false}
@@ -297,19 +309,7 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
           <ActivityIndicator className="m-3" size="large" />
         ) : (
           error && (
-            <HelperText type="error">
-              {(
-                (
-                  error?.networkError as unknown as {
-                    result: {errors: {message: string}[]};
-                  }
-                ).result as {
-                  errors: {message: string}[];
-                }
-              ).errors
-                .map(e => e.message)
-                .join(', ')}
-            </HelperText>
+            <HelperText type="error">{handleNetworkError(error)}</HelperText>
           )
         )}
       </Animated.ScrollView>

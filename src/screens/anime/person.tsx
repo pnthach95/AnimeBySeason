@@ -1,21 +1,23 @@
 import React from 'react';
-import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {Text} from 'react-native-paper';
+import {Text, TouchableRipple} from 'react-native-paper';
 
 type Props = {
   name: string;
   image: string;
+  onPress?: () => void;
 };
 
-const Person = ({image, name}: Props) => {
+const Person = ({image, name, onPress}: Props) => {
   return (
-    <View className="w-24 items-center">
-      <FastImage className="aspect-poster w-20" source={{uri: image}} />
-      <Text selectable className="text-center">
-        {name}
-      </Text>
-    </View>
+    <TouchableRipple className="w-24 items-center" onPress={onPress}>
+      <>
+        <FastImage className="aspect-poster w-20" source={{uri: image}} />
+        <Text selectable className="text-center">
+          {name}
+        </Text>
+      </>
+    </TouchableRipple>
   );
 };
 

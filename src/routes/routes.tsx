@@ -9,6 +9,7 @@ import {useColorScheme} from 'nativewind';
 import React, {useEffect} from 'react';
 import {StatusBar} from 'react-native';
 import AnimeScreen from 'screens/anime';
+import CharacterScreen from 'screens/character';
 import GalleryScreen from 'screens/gallery';
 import {useAppColorScheme} from 'stores';
 import {navigationDarkTheme, navigationTheme, useAppTheme} from 'utils/themes';
@@ -60,6 +61,7 @@ const Routes = () => {
           name="Anime"
           options={{headerShown: false}}
         />
+        <RootStack.Screen component={CharacterScreen} name="Character" />
         <RootStack.Screen
           component={GalleryScreen}
           name="Gallery"

@@ -27,6 +27,11 @@ type RootStackParamList = {
       bannerImage: string | null;
     };
   };
+  Character: {
+    id: number;
+    image: string;
+    name: string;
+  };
   Gallery: {
     idx: number;
     images: string[];

@@ -21,14 +21,16 @@ import {
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
+  IMediaItem,
   MediaFormat,
   MediaSeason,
   MediaSort,
   MediaType,
 } from 'typings/globalTypes';
 import {useImmer} from 'use-immer';
+import {handleNetworkError} from 'utils';
 import {QUERY} from './query';
-import type {AnimeList, AnimeList_Page_media} from './types';
+import type {AnimeList} from './types';
 import type {ListRenderItem} from 'react-native';
 import type {MainTabScreenProps} from 'typings/navigation';
 
@@ -139,24 +141,13 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
       return <ActivityIndicator size="large" />;
     }
     if (error) {
-      const text = (
-        (
-          error?.networkError as unknown as {
-            result: {errors: {message: string}[]};
-          }
-        ).result as {
-          errors: {message: string}[];
-        }
-      ).errors
-        .map(e => e.message)
-        .join(', ');
-
+      const text = handleNetworkError(error);
       return <HelperText type="error">{text}</HelperText>;
     }
     return <Text className="text-center">Empty</Text>;
   };
 
-  const renderItem: ListRenderItem<AnimeList_Page_media> = ({item}) => {
+  const renderItem: ListRenderItem<IMediaItem> = ({item}) => {
     const onPress = () => {
       navigation.navigate('Anime', {item});
     };

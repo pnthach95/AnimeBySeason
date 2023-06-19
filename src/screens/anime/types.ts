@@ -11,22 +11,6 @@ import {
 // GraphQL query operation: Anime
 // ====================================================
 
-export interface Anime_Media_Date {
-  __typename: 'FuzzyDate';
-  /**
-   * Numeric Year (2017)
-   */
-  year: number | null;
-  /**
-   * Numeric Month (3)
-   */
-  month: number | null;
-  /**
-   * Numeric Day (24)
-   */
-  day: number | null;
-}
-
 export interface Anime_Media_tags {
   __typename: 'MediaTag';
   /**
@@ -278,11 +262,11 @@ export interface Anime_Media {
   /**
    * The first official release date of the media
    */
-  startDate: Anime_Media_Date | null;
+  startDate: FuzzyDate;
   /**
    * The last official release date of the media
    */
-  endDate: Anime_Media_Date | null;
+  endDate: FuzzyDate;
   /**
    * The general length of each anime episode in minutes
    */

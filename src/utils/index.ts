@@ -1,3 +1,4 @@
+import {ApolloError} from '@apollo/client';
 import {Linking} from 'react-native';
 import {showMessage} from 'react-native-flash-message';
 
@@ -33,4 +34,18 @@ export const normalizeEnumName = (str: string | null) => {
     );
   }
   return '';
+};
+
+export const handleNetworkError = (error: ApolloError) => {
+  return (
+    (
+      error?.networkError as unknown as {
+        result: {errors: {message: string}[]};
+      }
+    ).result as {
+      errors: {message: string}[];
+    }
+  ).errors
+    .map(e => e.message)
+    .join(', ');
 };
