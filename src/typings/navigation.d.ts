@@ -7,7 +7,7 @@ import type {StackScreenProps} from '@react-navigation/stack';
 
 type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
-  Anime: {
+  Media: {
     item: {
       /**
        * The id of the media

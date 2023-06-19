@@ -39,7 +39,7 @@ import type {RootStackScreenProps} from 'typings/navigation';
 
 const Separator = () => <View className="w-3" />;
 
-const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
+const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
   const translationY = useSharedValue(0);
   const {width} = useWindowDimensions();
   const {colors, dark} = useTheme();
@@ -120,7 +120,7 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
     item,
   }) => {
     const onPress = () => {
-      navigation.push('Anime', {item: item.node});
+      navigation.push('Media', {item: item.node});
     };
 
     return (
@@ -317,4 +317,4 @@ const AnimeScreen = ({navigation, route}: RootStackScreenProps<'Anime'>) => {
   );
 };
 
-export default AnimeScreen;
+export default MediaScreen;

@@ -8,9 +8,9 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import {useColorScheme} from 'nativewind';
 import React, {useEffect} from 'react';
 import {StatusBar} from 'react-native';
-import AnimeScreen from 'screens/anime';
 import CharacterScreen from 'screens/character';
 import GalleryScreen from 'screens/gallery';
+import MediaScreen from 'screens/media';
 import {useAppColorScheme} from 'stores';
 import {navigationDarkTheme, navigationTheme, useAppTheme} from 'utils/themes';
 import MainTab from './tabs';
@@ -57,8 +57,8 @@ const Routes = () => {
           options={{headerShown: false}}
         />
         <RootStack.Screen
-          component={AnimeScreen}
-          name="Anime"
+          component={MediaScreen}
+          name="Media"
           options={{headerShown: false}}
         />
         <RootStack.Screen component={CharacterScreen} name="Character" />

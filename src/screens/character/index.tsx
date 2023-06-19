@@ -44,7 +44,7 @@ const CharacterScreen = ({
     item,
   }) => {
     const onPress = () => {
-      navigation.push('Anime', {item: item.node});
+      navigation.push('Media', {item: item.node});
     };
 
     return (
