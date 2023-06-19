@@ -37,6 +37,7 @@ type RootStackParamList = {
     image: string;
     name: string;
   };
+  Search: undefined;
   Gallery: {
     idx: number;
     images: string[];

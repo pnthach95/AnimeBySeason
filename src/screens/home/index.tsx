@@ -4,13 +4,13 @@ import {
   BottomSheetModal,
   useBottomSheetDynamicSnapPoints,
 } from '@gorhom/bottom-sheet';
+import MediaItem from 'components/mediaitem';
 import CustomBackdrop from 'components/sheet/backdrop';
 import CustomBackground from 'components/sheet/background';
 import CustomHandle from 'components/sheet/handle';
 import dayjs from 'dayjs';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {FlatList, RefreshControl, View} from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {
   ActivityIndicator,
   Appbar,
@@ -152,33 +152,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
       navigation.navigate('Media', {item});
     };
 
-    return (
-      <TouchableRipple onPress={onPress}>
-        <View className="mx-3 flex-row">
-          {!!item.coverImage.medium && (
-            <FastImage
-              className="aspect-poster w-20"
-              resizeMode="contain"
-              source={{uri: item.coverImage.medium}}
-              style={{
-                backgroundColor: item.coverImage.color || undefined,
-              }}
-            />
-          )}
-          <View className="ml-3 flex-1">
-            <Text variant="titleLarge">{item.title.romaji}</Text>
-            {!!item.title.english && (
-              <Text variant="titleMedium">{item.title.english}</Text>
-            )}
-            {item.format === MediaFormat.TV && (
-              <Text>Episodes: {item.episodes || 0}</Text>
-            )}
-            <Text variant="labelSmall">{item.format}</Text>
-            <Text variant="labelSmall">{item.genres.join(', ')}</Text>
-          </View>
-        </View>
-      </TouchableRipple>
-    );
+    return <MediaItem item={item} onPress={onPress} />;
   };
 
   const onEndReached = async () => {
@@ -196,6 +170,8 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
   const onShowSeasonYear = () => seasonYearSheetRef.current?.present();
 
   const onShowFormat = () => formatSheetRef.current?.present();
+
+  const onPressSearch = () => navigation.navigate('Search');
 
   return (
     <>
@@ -217,6 +193,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         <TouchableRipple onPress={onShowFormat}>
           <Text>Format</Text>
         </TouchableRipple>
+        <Appbar.Action icon="magnify" onPress={onPressSearch} />
       </Appbar.Header>
       <BottomSheetModal
         ref={seasonSheetRef}

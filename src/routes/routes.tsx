@@ -11,6 +11,7 @@ import {StatusBar} from 'react-native';
 import CharacterScreen from 'screens/character';
 import GalleryScreen from 'screens/gallery';
 import MediaScreen from 'screens/media';
+import SearchScreen from 'screens/search';
 import StaffScreen from 'screens/staff';
 import {useAppColorScheme} from 'stores';
 import {navigationDarkTheme, navigationTheme, useAppTheme} from 'utils/themes';
@@ -64,6 +65,11 @@ const Routes = () => {
         />
         <RootStack.Screen component={CharacterScreen} name="Character" />
         <RootStack.Screen component={StaffScreen} name="Staff" />
+        <RootStack.Screen
+          component={SearchScreen}
+          name="Search"
+          options={{headerTransparent: true, title: ''}}
+        />
         <RootStack.Screen
           component={GalleryScreen}
           name="Gallery"

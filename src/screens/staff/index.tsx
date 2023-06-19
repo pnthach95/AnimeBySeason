@@ -19,7 +19,7 @@ import RenderHTML from 'react-native-render-html';
 import {MediaSort} from 'typings/globalTypes';
 import {handleNetworkError, normalizeEnumName} from 'utils';
 import {QUERY} from './query';
-import {
+import type {
   Staff,
   StaffVariables,
   Staff_Staff_characterMedia_edges,
