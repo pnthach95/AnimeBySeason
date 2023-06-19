@@ -258,7 +258,7 @@ export interface Anime_Media {
   /**
    * Short description of the media's story and characters
    */
-  description: string;
+  description: string | null;
   /**
    * The first official release date of the media
    */

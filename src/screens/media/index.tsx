@@ -148,7 +148,9 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
           className="flex-1 rounded-xl"
           onPress={onPress}>
           <View className="items-center space-y-1 p-3">
-            <Text>{normalizeEnumName(item.relationType)}</Text>
+            <Text variant="labelSmall">
+              {normalizeEnumName(item.relationType)}
+            </Text>
             <FastImage
               className="aspect-poster w-20"
               source={{uri: item.node.coverImage.medium || ''}}
@@ -271,9 +273,11 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
                       .format('ll')}
                   </TextRow>
                 )}
-              <TextRow label="Studios">
-                {data.Media.studios.nodes.map(s => s.name).join('\n')}
-              </TextRow>
+              {data.Media.studios.nodes.length > 0 && (
+                <TextRow label="Studios">
+                  {data.Media.studios.nodes.map(s => s.name).join('\n')}
+                </TextRow>
+              )}
               <TextRow label="Source">
                 {normalizeEnumName(data.Media.source)}
               </TextRow>
@@ -302,11 +306,13 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
               renderItem={renderStaff}
               showsHorizontalScrollIndicator={false}
             />
-            <RenderHtml
-              baseStyle={baseStyle}
-              contentWidth={width}
-              source={{html: data.Media.description}}
-            />
+            {!!data.Media.description && (
+              <RenderHtml
+                baseStyle={baseStyle}
+                contentWidth={width}
+                source={{html: data.Media.description}}
+              />
+            )}
             {data.Media.relations && (
               <>
                 <Text className="mx-3 mb-3" variant="labelMedium">

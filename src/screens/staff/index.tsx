@@ -140,8 +140,12 @@ const StaffScreen = ({navigation, route}: RootStackScreenProps<'Staff'>) => {
               <Text className="text-center" variant="titleSmall">
                 {data.Staff.name.native}
               </Text>
-              <TextRow label="Age">{data.Staff.age}</TextRow>
-              <TextRow label="Gender">{data.Staff.gender}</TextRow>
+              {!!data.Staff.age && (
+                <TextRow label="Age">{data.Staff.age}</TextRow>
+              )}
+              {!!data.Staff.gender && (
+                <TextRow label="Gender">{data.Staff.gender}</TextRow>
+              )}
               {!!data.Staff.bloodType && (
                 <TextRow label="Blood type">{data.Staff.bloodType}</TextRow>
               )}

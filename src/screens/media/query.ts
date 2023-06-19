@@ -29,7 +29,7 @@ export const QUERY = gql`
         id
         name
       }
-      characters {
+      characters(sort: [ROLE, RELEVANCE, ID]) {
         edges {
           id
           role
@@ -55,7 +55,7 @@ export const QUERY = gql`
           }
         }
       }
-      staff {
+      staff(sort: [RELEVANCE, ID]) {
         nodes {
           id
           name {
