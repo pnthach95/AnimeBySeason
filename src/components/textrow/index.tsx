@@ -34,8 +34,8 @@ const TextRow = ({children, label, style}: Props) => {
   return (
     <View className="space-y-3" style={style}>
       <View
-        className={`flex-row items-${
-          checkHeight ? 'start' : 'end'
+        className={`flex-row ${
+          checkHeight ? 'items-start' : 'items-end'
         } justify-between space-x-3`}>
         <Text
           className={checkHeight ? 'pt-0.5' : undefined}

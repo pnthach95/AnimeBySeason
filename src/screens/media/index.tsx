@@ -187,7 +187,9 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
               className="aspect-poster w-20"
               source={{uri: item.node.coverImage.medium || ''}}
             />
-            <Text className="text-center">{item.node.title.romaji}</Text>
+            <Text className="text-center" numberOfLines={3}>
+              {item.node.title.romaji}
+            </Text>
             <Text variant="bodySmall">
               {normalizeEnumName(item.node.format)}
             </Text>
@@ -202,7 +204,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
       <StatusBar translucent backgroundColor="transparent" />
       <View className="absolute z-10" style={paddingTop}>
         <View className="h-14 flex-row items-center">
-          <Appbar.BackAction />
+          <Appbar.BackAction onPress={navigation.goBack} />
         </View>
       </View>
       <Animated.View
@@ -223,7 +225,9 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
             onPress={navigation.goBack}
           />
           <Text
-            className={`flex-1 ${isColorDark ? 'text-white' : 'text-black'}`}
+            className={`mr-1 flex-1 ${
+              isColorDark ? 'text-white' : 'text-black'
+            }`}
             numberOfLines={2}
             variant="titleLarge">
             {route.params.title || data?.Media.title.romaji}
@@ -254,7 +258,10 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
         ) : (
           <View className="h-14 w-full" style={marginTop} />
         )}
-        <Text className="mx-3 my-3 text-center" variant="headlineMedium">
+        <Text
+          selectable
+          className="mx-3 my-3 text-center"
+          variant="headlineMedium">
           {route.params.title || data?.Media.title.romaji}
         </Text>
         {(!!route.params.coverImage || !!data?.Media.coverImage.large) && (
@@ -300,7 +307,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
                   <TextRow label="Start date">
                     {dayjs()
                       .date(data.Media.startDate.day)
-                      .month(data.Media.startDate.month)
+                      .month(data.Media.startDate.month - 1)
                       .year(data.Media.startDate.year)
                       .format('ll')}
                   </TextRow>
@@ -312,7 +319,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
                   <TextRow label="End date">
                     {dayjs()
                       .date(data.Media.endDate.day)
-                      .month(data.Media.endDate.month)
+                      .month(data.Media.endDate.month - 1)
                       .year(data.Media.endDate.year)
                       .format('ll')}
                   </TextRow>
@@ -354,6 +361,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
               <RenderHtml
                 baseStyle={baseStyle}
                 contentWidth={width}
+                defaultTextProps={{selectable: true}}
                 source={{html: data.Media.description}}
               />
             )}
@@ -376,12 +384,14 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
               Tags
             </Text>
             {data.Media.tags.map(t => (
-              <Surface className="mx-3 mb-3 rounded-xl p-3">
+              <Surface key={t.name} className="mx-3 mb-3 rounded-xl p-3">
                 <View className="flex-row justify-between">
-                  <Text>{t.name}</Text>
+                  <Text selectable>{t.name}</Text>
                   <Text>{t.rank}</Text>
                 </View>
-                <Text variant="labelSmall">{t.description.trim()}</Text>
+                <Text selectable variant="labelSmall">
+                  {t.description.trim()}
+                </Text>
               </Surface>
             ))}
           </View>
