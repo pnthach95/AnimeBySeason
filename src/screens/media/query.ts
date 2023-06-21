@@ -37,6 +37,8 @@ export const QUERY = gql`
           voiceActors(language: JAPANESE, sort: [RELEVANCE, ID]) {
             id
             name {
+              full
+              native
               userPreferred
             }
             language: languageV2

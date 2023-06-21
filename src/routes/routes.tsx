@@ -64,7 +64,11 @@ const Routes = () => {
           options={{headerShown: false}}
         />
         <RootStack.Screen component={CharacterScreen} name="Character" />
-        <RootStack.Screen component={StaffScreen} name="Staff" />
+        <RootStack.Screen
+          component={StaffScreen}
+          name="Staff"
+          options={{headerShadowVisible: false}}
+        />
         <RootStack.Screen
           component={SearchScreen}
           name="Search"

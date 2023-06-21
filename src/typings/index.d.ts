@@ -6,6 +6,14 @@ type StoreState = {
   appLanguage: TLanguage;
 };
 
+type PageInfo = {
+  total: number;
+  perPage: number;
+  currentPage: number;
+  lastPage: number;
+  hasNextPage: boolean;
+};
+
 interface FuzzyDate {
   /**
    * Numeric Year (2017)

@@ -4,31 +4,33 @@ import {
   BottomSheetModal,
   useBottomSheetDynamicSnapPoints,
 } from '@gorhom/bottom-sheet';
+import Loading from 'components/loading';
 import MediaItem from 'components/mediaitem';
+import Separator from 'components/separator';
 import CustomBackdrop from 'components/sheet/backdrop';
 import CustomBackground from 'components/sheet/background';
 import CustomHandle from 'components/sheet/handle';
 import dayjs from 'dayjs';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {FlatList, RefreshControl, View} from 'react-native';
+import {FlatList, RefreshControl} from 'react-native';
 import {
-  ActivityIndicator,
   Appbar,
-  HelperText,
+  Button,
   Text,
   TouchableRipple,
   useTheme,
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
-  IMediaItem,
+  type IMediaItem,
   MediaFormat,
   MediaSeason,
   MediaSort,
   MediaType,
 } from 'typings/globalTypes';
 import {useImmer} from 'use-immer';
-import {handleNetworkError} from 'utils';
+import {handleNetworkError, normalizeEnumName} from 'utils';
+import AppStyles from 'utils/styles';
 import {QUERY} from './query';
 import type {AnimeList} from './types';
 import type {ListRenderItem} from 'react-native';
@@ -83,8 +85,6 @@ const getInitSeason = () => {
   return MediaSeason.WINTER;
 };
 
-const Separator = () => <View className="h-3" />;
-
 const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
   const initialSnapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
   const seasonSheetRef = useRef<BottomSheetModal>(null);
@@ -106,7 +106,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
     format: [MediaFormat.MOVIE, MediaFormat.TV],
     type: MediaType.ANIME,
   });
-  const {loading, data, previousData, error, refetch, fetchMore} = useQuery<
+  const {loading, data, error, refetch, fetchMore} = useQuery<
     AnimeList,
     TQuery
   >(QUERY, {
@@ -137,14 +137,13 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
   );
 
   const listEmpty = () => {
-    if (loading) {
-      return <ActivityIndicator size="large" />;
-    }
-    if (error) {
-      const text = handleNetworkError(error);
-      return <HelperText type="error">{text}</HelperText>;
-    }
-    return <Text className="text-center">Empty</Text>;
+    return (
+      <Loading
+        emptyText="Empty"
+        errorText={handleNetworkError(error)}
+        loading={loading}
+      />
+    );
   };
 
   const renderItem: ListRenderItem<IMediaItem> = ({item}) => {
@@ -156,7 +155,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
   };
 
   const onEndReached = async () => {
-    if (data?.Page.media.length === previousData?.Page.media.length) {
+    if (data && !data.Page.pageInfo.hasNextPage) {
       return;
     }
     await fetchMore({variables: {page: query.page + 1}});
@@ -173,26 +172,85 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
 
   const onPressSearch = () => navigation.navigate('Search');
 
+  const renderMediaSeason: ListRenderItem<MediaSeason> = ({item}) => {
+    const onPress = () => {
+      setQuery(draft => {
+        draft.season = item;
+        draft.page = 1;
+      });
+      seasonSheetRef.current?.dismiss();
+    };
+    return (
+      <TouchableRipple className="p-3" onPress={onPress}>
+        <Text>{normalizeEnumName(item)}</Text>
+      </TouchableRipple>
+    );
+  };
+
+  const renderYear: ListRenderItem<number> = ({item}) => {
+    const onPress = () => {
+      setQuery(draft => {
+        draft.seasonYear = item;
+        draft.page = 1;
+      });
+      seasonYearSheetRef.current?.dismiss();
+    };
+    return (
+      <TouchableRipple className="p-3" onPress={onPress}>
+        <Text>{item}</Text>
+      </TouchableRipple>
+    );
+  };
+
+  const renderMediaFormat: ListRenderItem<MediaFormat> = ({item}) => {
+    const onPress = () => {
+      setQuery(draft => {
+        if (draft.format.includes(item)) {
+          const index = draft.format.findIndex(mm => mm === item);
+          if (index !== -1) {
+            draft.format.splice(index, 1);
+          }
+        } else {
+          draft.format.push(item);
+        }
+        draft.page = 1;
+      });
+    };
+    return (
+      <TouchableRipple
+        className="flex-row justify-between p-3"
+        onPress={onPress}>
+        <>
+          <Text>{normalizeEnumName(item)}</Text>
+          {query.format.includes(item) ? (
+            <Icon color={colors.onBackground} name="check" size={20} />
+          ) : undefined}
+        </>
+      </TouchableRipple>
+    );
+  };
+
   return (
     <>
       <FlatList
-        data={data?.Page.media || []}
+        contentContainerStyle={AppStyles.paddingVertical}
+        data={data?.Page.media}
         ItemSeparatorComponent={Separator}
         ListEmptyComponent={listEmpty}
         refreshControl={RC}
         renderItem={renderItem}
         onEndReached={onEndReached}
       />
-      <Appbar.Header className="justify-evenly">
-        <TouchableRipple onPress={onShowSeason}>
-          <Text>Season {query.season}</Text>
-        </TouchableRipple>
-        <TouchableRipple onPress={onShowSeasonYear}>
-          <Text>Year {query.seasonYear}</Text>
-        </TouchableRipple>
-        <TouchableRipple onPress={onShowFormat}>
-          <Text>Format</Text>
-        </TouchableRipple>
+      <Appbar.Header elevated className="justify-evenly">
+        <Button compact onPress={onShowSeason}>
+          Season {query.season}
+        </Button>
+        <Button compact onPress={onShowSeasonYear}>
+          Year {query.seasonYear}
+        </Button>
+        <Button compact onPress={onShowFormat}>
+          Format
+        </Button>
         <Appbar.Action icon="magnify" onPress={onPressSearch} />
       </Appbar.Header>
       <BottomSheetModal
@@ -206,20 +264,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         snapPoints={animatedSnapPoints}>
         <BottomSheetFlatList
           data={MEDIA_SEASONS}
-          renderItem={({item}) => {
-            const onPress = () => {
-              setQuery(draft => {
-                draft.season = item;
-                draft.page = 1;
-              });
-              seasonSheetRef.current?.dismiss();
-            };
-            return (
-              <TouchableRipple className="p-3" onPress={onPress}>
-                <Text>{item}</Text>
-              </TouchableRipple>
-            );
-          }}
+          renderItem={renderMediaSeason}
           onLayout={handleContentLayout}
         />
       </BottomSheetModal>
@@ -234,20 +279,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         snapPoints={animatedSnapPoints}>
         <BottomSheetFlatList
           data={YEARS}
-          renderItem={({item}) => {
-            const onPress = () => {
-              setQuery(draft => {
-                draft.seasonYear = item;
-                draft.page = 1;
-              });
-              seasonYearSheetRef.current?.dismiss();
-            };
-            return (
-              <TouchableRipple className="p-3" onPress={onPress}>
-                <Text>{item}</Text>
-              </TouchableRipple>
-            );
-          }}
+          renderItem={renderYear}
           onLayout={handleContentLayout}
         />
       </BottomSheetModal>
@@ -262,33 +294,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         snapPoints={animatedSnapPoints}>
         <BottomSheetFlatList
           data={MEDIA_FORMATS}
-          renderItem={({item}) => {
-            const onPress = () => {
-              setQuery(draft => {
-                if (draft.format.includes(item)) {
-                  const index = draft.format.findIndex(mm => mm === item);
-                  if (index !== -1) {
-                    draft.format.splice(index, 1);
-                  }
-                } else {
-                  draft.format.push(item);
-                }
-                draft.page = 1;
-              });
-            };
-            return (
-              <TouchableRipple
-                className="flex-row justify-between p-3"
-                onPress={onPress}>
-                <>
-                  <Text>{item}</Text>
-                  {query.format.includes(item) ? (
-                    <Icon color={colors.onBackground} name="check" size={20} />
-                  ) : undefined}
-                </>
-              </TouchableRipple>
-            );
-          }}
+          renderItem={renderMediaFormat}
           onLayout={handleContentLayout}
         />
       </BottomSheetModal>

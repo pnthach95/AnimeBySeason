@@ -15,13 +15,6 @@ export interface Character_Character_name {
   native: string;
 }
 
-export interface QImage {
-  /**
-   * The character's image of media at its largest size
-   */
-  large: string | null;
-}
-
 export interface Character_Character_media_edges_voiceActorRoles_voiceActor_name {
   __typename: 'StaffName';
   /**
@@ -43,7 +36,7 @@ export interface Character_Character_media_edges_voiceActorRoles_voiceActor {
   /**
    * The staff images
    */
-  image: QImage | null;
+  image: MediaCoverImage | null;
 }
 
 export interface Character_Character_media_edges_voiceActorRoles {
@@ -75,7 +68,7 @@ export interface Character_Character_media_edges {
 }
 
 export interface Character_Character_media {
-  edges: Character_Character_media_edges[] | null;
+  edges: Character_Character_media_edges[];
 }
 
 export interface Character_Character {
@@ -90,7 +83,7 @@ export interface Character_Character {
   /**
    * Character images
    */
-  image: QImage | null;
+  image: MediaCoverImage | null;
   /**
    * A general description of the character
    */

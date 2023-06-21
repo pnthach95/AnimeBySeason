@@ -1,9 +1,20 @@
 import {gql} from '@apollo/client';
 
 export const QUERY = gql`
-  query AnimeList($keyword: String, $page: Int) {
-    Page(page: $page, perPage: 20) {
-      media(search: $keyword, type: ANIME) {
+  query SearchResultList($keyword: String, $page: Int) {
+    SearchResult: Page(page: $page) {
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
+      media(
+        search: $keyword
+        type: ANIME
+        sort: [POPULARITY_DESC, SCORE_DESC]
+      ) {
         id
         episodes
         title {

@@ -1,17 +1,27 @@
 import React from 'react';
 import {View} from 'react-native';
-import {ActivityIndicator, HelperText, useTheme} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  HelperText,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type Props = {
-  errorText: string;
+  loading: boolean;
+  emptyText?: string;
+  errorText?: string;
 };
 
-const Loading = ({errorText}: Props) => {
+const Loading = ({errorText, emptyText = 'No data', loading}: Props) => {
   const {colors} = useTheme();
+
   return (
-    <View className="flex-1 items-center justify-center">
-      {errorText.length > 0 ? (
+    <View className="flex-1 items-center justify-center p-3">
+      {loading ? (
+        <ActivityIndicator size="large" />
+      ) : errorText && errorText.length > 0 ? (
         <>
           <Icon
             color={colors.error}
@@ -24,7 +34,7 @@ const Loading = ({errorText}: Props) => {
           </HelperText>
         </>
       ) : (
-        <ActivityIndicator size="large" />
+        <Text className="text-center">{emptyText}</Text>
       )}
     </View>
   );

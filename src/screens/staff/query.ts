@@ -1,8 +1,8 @@
 import {gql} from '@apollo/client';
 
-export const QUERY = gql`
-  query Staff($id: Int, $sort: [MediaSort], $onList: Boolean) {
-    Staff(id: $id) {
+export const QUERY_INFO = gql`
+  query StaffInfo($id: Int) {
+    StaffInfo: Staff(id: $id) {
       id
       name {
         full
@@ -31,7 +31,22 @@ export const QUERY = gql`
         day
       }
       language: languageV2
-      characterMedia(sort: $sort, onList: $onList) {
+    }
+  }
+`;
+
+export const QUERY_CHARACTERS = gql`
+  query StaffCharacters($id: Int, $sort: [MediaSort], $characterPage: Int) {
+    StaffCharacters: Staff(id: $id) {
+      id
+      characterMedia(page: $characterPage, sort: $sort) {
+        pageInfo {
+          total
+          perPage
+          currentPage
+          lastPage
+          hasNextPage
+        }
         edges {
           characterRole
           characterName
@@ -72,7 +87,22 @@ export const QUERY = gql`
           }
         }
       }
-      staffMedia(sort: $sort, onList: $onList) {
+    }
+  }
+`;
+
+export const QUERY_STAFF_MEDIA = gql`
+  query StaffMedia($id: Int, $sort: [MediaSort], $staffPage: Int) {
+    StaffMedia: Staff(id: $id) {
+      id
+      staffMedia(page: $staffPage, sort: $sort) {
+        pageInfo {
+          total
+          perPage
+          currentPage
+          lastPage
+          hasNextPage
+        }
         edges {
           staffRole
           node {

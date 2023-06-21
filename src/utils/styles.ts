@@ -47,6 +47,7 @@ const AppStyles = StyleSheet.create({
   noGrow: {flexGrow: 0},
   padding: {padding: 12},
   paddingHorizontal: {paddingHorizontal: 12},
+  paddingVertical: {paddingVertical: 12},
   selfCenter: {alignSelf: 'center'},
 });
 

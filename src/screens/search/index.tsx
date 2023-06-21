@@ -1,19 +1,17 @@
 import {useLazyQuery} from '@apollo/client';
+import Loading from 'components/loading';
 import MediaItem from 'components/mediaitem';
+import Separator from 'components/separator';
 import React from 'react';
-import {FlatList, View} from 'react-native';
-import {
-  ActivityIndicator,
-  HelperText,
-  Searchbar,
-  Text,
-} from 'react-native-paper';
+import {FlatList} from 'react-native';
+import {Searchbar} from 'react-native-paper';
 import {useDebouncedCallback} from 'use-debounce';
 import {useImmer} from 'use-immer';
 import {handleNetworkError} from 'utils';
+import AppStyles from 'utils/styles';
 import {QUERY} from './query';
+import type {SearchList} from './types';
 import type {ListRenderItem} from 'react-native';
-import type {AnimeList} from 'screens/home/types';
 import type {IMediaItem} from 'typings/globalTypes';
 import type {RootStackScreenProps} from 'typings/navigation';
 
@@ -22,15 +20,15 @@ type TQuery = {
   keyword: string;
 };
 
-const Separator = () => <View className="h-3" />;
-
 const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
   const [query, setQuery] = useImmer<TQuery>({
     page: 1,
     keyword: '',
   });
-  const [getAnimeList, {loading, error, previousData, fetchMore, data}] =
-    useLazyQuery<AnimeList, TQuery>(QUERY);
+  const [getAnimeList, {loading, error, fetchMore, data}] = useLazyQuery<
+    SearchList,
+    TQuery
+  >(QUERY);
   const debounced = useDebouncedCallback<(value: TQuery) => void>(
     // function
     value => {
@@ -41,17 +39,13 @@ const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
   );
 
   const listEmpty = () => {
-    if (loading) {
-      return <ActivityIndicator size="large" />;
-    }
-    if (error) {
-      const text = handleNetworkError(error);
-      return <HelperText type="error">{text}</HelperText>;
-    }
-    if (query.keyword.length > 0) {
-      return <Text className="text-center">Empty</Text>;
-    }
-    return null;
+    return (
+      <Loading
+        emptyText={query.keyword.length > 0 ? 'Empty' : ''}
+        errorText={handleNetworkError(error)}
+        loading={loading}
+      />
+    );
   };
 
   const renderItem: ListRenderItem<IMediaItem> = ({item}) => {
@@ -63,7 +57,7 @@ const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
   };
 
   const onEndReached = async () => {
-    if (data?.Page.media.length === previousData?.Page.media.length) {
+    if (data && !data?.SearchResult.pageInfo.hasNextPage) {
       return;
     }
     await fetchMore({variables: {page: query.page + 1}});
@@ -72,7 +66,7 @@ const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
     });
   };
 
-  const onChangeText = (keyword: string): void => {
+  const onChangeText = (keyword: string) => {
     setQuery({keyword, page: 1});
     debounced({keyword, page: 1});
   };
@@ -85,7 +79,8 @@ const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
         onChangeText={onChangeText}
       />
       <FlatList
-        data={data?.Page.media || []}
+        contentContainerStyle={AppStyles.paddingVertical}
+        data={data?.SearchResult.media}
         ItemSeparatorComponent={Separator}
         ListEmptyComponent={listEmpty}
         renderItem={renderItem}

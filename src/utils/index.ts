@@ -39,16 +39,19 @@ export const normalizeEnumName = (str: string | null) => {
   return '';
 };
 
-export const handleNetworkError = (error: ApolloError) => {
-  return (
-    (
-      error?.networkError as unknown as {
-        result: {errors: {message: string}[]};
+export const handleNetworkError = (error?: ApolloError) => {
+  if (error) {
+    return (
+      (
+        error?.networkError as unknown as {
+          result: {errors: {message: string}[]};
+        }
+      ).result as {
+        errors: {message: string}[];
       }
-    ).result as {
-      errors: {message: string}[];
-    }
-  ).errors
-    .map(e => e.message)
-    .join(', ');
+    ).errors
+      .map(e => e.message)
+      .join(', ');
+  }
+  return undefined;
 };

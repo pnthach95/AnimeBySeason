@@ -1,17 +1,13 @@
 import {useQuery} from '@apollo/client';
+import Loading from 'components/loading';
 import MediaItem from 'components/mediaitem';
+import Separator from 'components/separator';
 import TextRow from 'components/textrow';
 import dayjs from 'dayjs';
 import React, {useEffect} from 'react';
 import {FlatList, View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  ActivityIndicator,
-  HelperText,
-  Surface,
-  Text,
-  useTheme,
-} from 'react-native-paper';
+import {Surface, Text, TouchableRipple, useTheme} from 'react-native-paper';
 import RenderHTML from 'react-native-render-html';
 import {handleNetworkError, normalizeEnumName} from 'utils';
 import {QUERY} from './query';
@@ -23,8 +19,6 @@ type TQuery = {
   id: number;
 };
 
-const Separator = () => <View className="h-3" />;
-
 const CharacterScreen = ({
   navigation,
   route,
@@ -32,7 +26,7 @@ const CharacterScreen = ({
   const {colors} = useTheme();
   const {width} = useWindowDimensions();
   const baseStyle = {color: colors.onBackground, paddingTop: 12};
-  const {data, error} = useQuery<QCharacter, TQuery>(QUERY, {
+  const {loading, data, error} = useQuery<QCharacter, TQuery>(QUERY, {
     variables: {id: route.params.id},
   });
 
@@ -57,22 +51,42 @@ const CharacterScreen = ({
         <MediaItem item={item.node} onPress={onPress} />
         <View className="flex-row flex-wrap gap-3 p-3">
           {item.voiceActorRoles.map(va => {
-            return (
-              <Surface
-                className="flex-row items-center space-x-1 rounded-xl p-1"
-                elevation={3}>
-                <FastImage
-                  className="aspect-square w-10 rounded-full"
-                  source={{uri: va.voiceActor?.image?.large || ''}}
-                />
-                <View>
-                  <Text>{va.voiceActor?.name?.userPreferred}</Text>
-                  {!!va.roleNotes && (
-                    <Text variant="labelSmall">{va.roleNotes}</Text>
-                  )}
-                </View>
-              </Surface>
-            );
+            if (va.voiceActor) {
+              const {voiceActor} = va;
+              const onPressVA = () => {
+                navigation.push('Staff', {
+                  id: voiceActor.id,
+                  image: voiceActor.image?.large || '',
+                  name: voiceActor.name?.userPreferred || '',
+                });
+              };
+
+              return (
+                <Surface
+                  key={`${voiceActor.__typename}_${voiceActor.id || 0}`}
+                  className="rounded-xl"
+                  elevation={3}>
+                  <TouchableRipple
+                    borderless
+                    className="rounded-xl"
+                    onPress={onPressVA}>
+                    <View className="flex-row items-center space-x-1 p-1">
+                      <FastImage
+                        className="aspect-square w-10 rounded-full"
+                        source={{uri: voiceActor.image?.large || ''}}
+                      />
+                      <View>
+                        <Text>{voiceActor.name?.userPreferred}</Text>
+                        {!!va.roleNotes && (
+                          <Text variant="labelSmall">{va.roleNotes}</Text>
+                        )}
+                      </View>
+                    </View>
+                  </TouchableRipple>
+                </Surface>
+              );
+            }
+            return null;
           })}
         </View>
       </Surface>
@@ -129,16 +143,7 @@ const CharacterScreen = ({
   };
 
   const listEmpty = () => {
-    if (error) {
-      const text = handleNetworkError(error);
-      return <HelperText type="error">{text}</HelperText>;
-    }
-
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <Loading errorText={handleNetworkError(error)} loading={loading} />;
   };
 
   return (
@@ -148,6 +153,7 @@ const CharacterScreen = ({
       ListEmptyComponent={listEmpty}
       ListHeaderComponent={header}
       renderItem={renderMedia}
+      showsVerticalScrollIndicator={false}
     />
   );
 };

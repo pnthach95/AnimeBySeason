@@ -61,6 +61,8 @@ export interface Anime_Media_characters_edges_voiceActors {
 
 export interface Anime_Media_characters_edges_node_name {
   __typename: 'CharacterName';
+  full: string | null;
+  native: string | null;
   /**
    * The currently authenticated users preferred name language. Default romaji for non-authenticated
    */

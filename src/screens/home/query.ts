@@ -9,7 +9,14 @@ export const QUERY = gql`
     $type: MediaType
     $format: [MediaFormat]
   ) {
-    Page(page: $page, perPage: 20) {
+    Page(page: $page) {
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
       media(
         season: $season
         seasonYear: $seasonYear

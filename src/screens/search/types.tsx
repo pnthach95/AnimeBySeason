@@ -4,11 +4,11 @@ import {IMediaItem} from 'typings/globalTypes';
 // GraphQL query operation: AnimeList
 // ====================================================
 
-export interface AnimeList_Page {
+export interface SearchList_Page {
   pageInfo: PageInfo;
   media: IMediaItem[];
 }
 
-export interface AnimeList {
-  Page: AnimeList_Page;
+export interface SearchList {
+  SearchResult: SearchList_Page;
 }
