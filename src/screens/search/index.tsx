@@ -50,14 +50,23 @@ const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
 
   const renderItem: ListRenderItem<IMediaItem> = ({item}) => {
     const onPress = () => {
-      navigation.navigate('Media', {item});
+      navigation.navigate('Media', {
+        id: item.id,
+        bannerImage: item.bannerImage,
+        coverImage: item.coverImage.large || item.coverImage.medium,
+        color: item.coverImage.color,
+        title: item.title.romaji,
+      });
     };
 
     return <MediaItem item={item} onPress={onPress} />;
   };
 
   const onEndReached = async () => {
-    if (data && !data?.SearchResult.pageInfo.hasNextPage) {
+    if (
+      query.keyword.length === 0 ||
+      (data && !data?.SearchResult.pageInfo.hasNextPage)
+    ) {
       return;
     }
     await fetchMore({variables: {page: query.page + 1}});
@@ -68,7 +77,9 @@ const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
 
   const onChangeText = (keyword: string) => {
     setQuery({keyword, page: 1});
-    debounced({keyword, page: 1});
+    if (keyword.length > 0) {
+      debounced({keyword, page: 1});
+    }
   };
 
   return (
@@ -80,7 +91,10 @@ const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
       />
       <FlatList
         contentContainerStyle={AppStyles.paddingVertical}
-        data={data?.SearchResult.media}
+        data={data?.SearchResult.media.filter(
+          (value, index, self) =>
+            index === self.findIndex(t => t.id === value.id),
+        )}
         ItemSeparatorComponent={Separator}
         ListEmptyComponent={listEmpty}
         renderItem={renderItem}

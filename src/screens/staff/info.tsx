@@ -1,7 +1,7 @@
 import {useQuery} from '@apollo/client';
 import TextRow from 'components/textrow';
 import dayjs from 'dayjs';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ScrollView, View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
@@ -18,11 +18,12 @@ import type {StaffInfo, StaffInfoVariables} from './types';
 
 type Props = {
   id: number;
-  image: string;
+  image?: string | null;
   openGallery: (idx: number, images: string[]) => void;
+  setTitle: (title: string) => void;
 };
 
-const StaffInfoScreen = ({id, image, openGallery}: Props) => {
+const StaffInfoScreen = ({id, image, openGallery, setTitle}: Props) => {
   const {colors} = useTheme();
   const {width} = useWindowDimensions();
   const baseStyle = {color: colors.onBackground, paddingTop: 12};
@@ -35,12 +36,23 @@ const StaffInfoScreen = ({id, image, openGallery}: Props) => {
     },
   );
 
+  useEffect(() => {
+    if (data?.StaffInfo.name.full) {
+      setTitle(data.StaffInfo.name.full);
+    }
+  }, [data?.StaffInfo.name.full]);
+
   if (error) {
     const text = handleNetworkError(error);
     return <HelperText type="error">{text}</HelperText>;
   }
 
-  const onPressAvatar = () => openGallery(1, [image]);
+  const onPressAvatar = () => {
+    const img = image || data?.StaffInfo.image?.large;
+    if (img) {
+      openGallery(1, [img]);
+    }
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -52,7 +64,7 @@ const StaffInfoScreen = ({id, image, openGallery}: Props) => {
             onPress={onPressAvatar}>
             <FastImage
               className="aspect-poster w-full"
-              source={{uri: image || ''}}
+              source={{uri: image || data?.StaffInfo.image?.large || ''}}
             />
           </TouchableRipple>
           {loading && (

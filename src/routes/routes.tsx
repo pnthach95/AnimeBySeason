@@ -1,5 +1,5 @@
 import 'locales';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, getStateFromPath} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -16,6 +16,7 @@ import StaffScreen from 'screens/staff';
 import {useAppColorScheme} from 'stores';
 import {navigationDarkTheme, navigationTheme, useAppTheme} from 'utils/themes';
 import MainTab from './tabs';
+import type {LinkingOptions} from '@react-navigation/native';
 import type {RootStackParamList} from 'typings/navigation';
 
 dayjs.extend(localizedFormat);
@@ -23,6 +24,24 @@ dayjs.extend(duration);
 dayjs.extend(customParseFormat);
 
 const RootStack = createStackNavigator<RootStackParamList>();
+
+const LINKING: LinkingOptions<RootStackParamList> = {
+  prefixes: ['https://anilist.co'],
+  getStateFromPath: (path, options) => {
+    const newPath = path.startsWith('/manga')
+      ? path.replace('/manga', '/anime')
+      : path;
+    return getStateFromPath(newPath, options);
+  },
+  config: {
+    initialRouteName: 'Main',
+    screens: {
+      Character: 'character/:id/*',
+      Media: 'anime/:id/*' || 'manga/:id/*',
+      Staff: 'staff/:id/*',
+    },
+  },
+};
 
 const Routes = () => {
   const appTheme = useAppColorScheme(),
@@ -47,6 +66,7 @@ const Routes = () => {
 
   return (
     <NavigationContainer
+      linking={LINKING}
       theme={appTheme === 'dark' ? navigationDarkTheme : navigationTheme}>
       <StatusBar
         backgroundColor={colors.elevation.level2}

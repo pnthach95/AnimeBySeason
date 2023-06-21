@@ -43,15 +43,36 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
   const {width} = useWindowDimensions();
   const {colors, dark} = useTheme();
   const {data, loading, error} = useQuery<Anime, AnimeVariables>(QUERY, {
-    variables: {id: route.params.item.id},
+    variables: {id: route.params.id},
   });
   const insets = useSafeAreaInsets();
   const paddingTop = useSafeAreaPaddingTop();
   const marginTop = {marginTop: insets.top};
   const baseStyle = {color: colors.onBackground, padding: 12};
-  const isColorDark = route.params.item.coverImage.color
-    ? colord(route.params.item.coverImage.color).isDark()
+  const isColorDark = route.params.color
+    ? colord(route.params.color).isDark()
+    : data?.Media.coverImage.color
+    ? colord(data.Media.coverImage.color).isDark()
     : dark;
+
+  const onPressCover = () => {
+    const img =
+      route.params.coverImage ||
+      data?.Media.coverImage.large ||
+      data?.Media.coverImage.medium;
+    if (img) {
+      navigation.navigate('Gallery', {idx: 0, images: [img]});
+    }
+  };
+
+  const onPressBanner = () => {
+    if (data?.Media.bannerImage) {
+      navigation.navigate('Gallery', {
+        idx: 0,
+        images: [data.Media.bannerImage],
+      });
+    }
+  };
 
   const renderCharacter: ListRenderItem<Anime_Media_characters_edges> = ({
     item,
@@ -62,7 +83,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
         navigation.push('Character', {
           id: node.id,
           image: node.image.large,
-          name: node.name.userPreferred || '',
+          name: node.name.userPreferred,
         });
       }
     };
@@ -105,8 +126,8 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
     const onPress = () => {
       navigation.push('Staff', {
         id: item.id,
-        image: item.image?.large || '',
-        name: item.name?.userPreferred || '',
+        image: item.image?.large,
+        name: item.name?.userPreferred,
       });
     };
 
@@ -135,6 +156,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
         [0, 1],
         Extrapolation.CLAMP,
       ),
+      display: translationY.value === 0 ? 'none' : undefined,
     };
   });
 
@@ -142,7 +164,13 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
     item,
   }) => {
     const onPress = () => {
-      navigation.push('Media', {item: item.node});
+      navigation.push('Media', {
+        id: item.node.id,
+        bannerImage: item.node.bannerImage,
+        coverImage: item.node.coverImage.large || item.node.coverImage.medium,
+        color: item.node.coverImage.color,
+        title: item.node.title.romaji,
+      });
     };
 
     return (
@@ -182,7 +210,9 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
         style={[
           {
             backgroundColor:
-              route.params.item.coverImage.color || colors.background,
+              route.params.color ||
+              data?.Media.coverImage.color ||
+              colors.background,
           },
           paddingTop,
           stylez,
@@ -196,42 +226,50 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
             className={`flex-1 ${isColorDark ? 'text-white' : 'text-black'}`}
             numberOfLines={2}
             variant="titleLarge">
-            {route.params.item.title.romaji}
+            {route.params.title || data?.Media.title.romaji}
           </Text>
         </View>
       </Animated.View>
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}>
-        {route.params.item.bannerImage ? (
+        {!!route.params.bannerImage || !!data?.Media.bannerImage ? (
           <>
-            <FastImage
-              className="aspect-banner w-full"
-              source={{uri: route.params.item.bannerImage}}
-            />
+            <TouchableRipple borderless onPress={onPressBanner}>
+              <FastImage
+                className="aspect-banner w-full"
+                source={{
+                  uri:
+                    route.params.bannerImage || data?.Media.bannerImage || '',
+                }}
+              />
+            </TouchableRipple>
             <View
               className={`absolute aspect-banner w-full ${
                 dark ? 'bg-black/30' : 'bg-white/30'
               }`}
+              pointerEvents="none"
             />
           </>
         ) : (
           <View className="h-14 w-full" style={marginTop} />
         )}
         <Text className="mx-3 my-3 text-center" variant="headlineMedium">
-          {route.params.item.title.romaji}
+          {route.params.title || data?.Media.title.romaji}
         </Text>
-        {(!!route.params.item.coverImage.medium ||
-          !!route.params.item.coverImage.large) && (
-          <FastImage
-            className="aspect-poster w-36 self-center"
-            source={{
-              uri:
-                route.params.item.coverImage.large ||
-                route.params.item.coverImage.medium ||
-                '',
-            }}
-          />
+        {(!!route.params.coverImage || !!data?.Media.coverImage.large) && (
+          <TouchableRipple
+            borderless
+            className="self-center"
+            onPress={onPressCover}>
+            <FastImage
+              className="aspect-poster w-36 self-center"
+              source={{
+                uri:
+                  route.params.coverImage || data?.Media.coverImage.large || '',
+              }}
+            />
+          </TouchableRipple>
         )}
         {data ? (
           <View className="mt-3">
@@ -247,9 +285,11 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
               {!!data.Media.episodes && (
                 <TextRow label="Episodes">{data.Media.episodes}</TextRow>
               )}
-              <TextRow label="Duration">
-                {`${data.Media.duration || 0} mins`}
-              </TextRow>
+              {!!data.Media.duration && data.Media.duration > 0 && (
+                <TextRow label="Duration">
+                  {`${data.Media.duration || 0} mins`}
+                </TextRow>
+              )}
               <TextRow label="Status">
                 {normalizeEnumName(data.Media.status)}
               </TextRow>

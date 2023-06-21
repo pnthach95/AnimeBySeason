@@ -10,6 +10,7 @@ import FastImage from 'react-native-fast-image';
 import {Surface, Text, TouchableRipple, useTheme} from 'react-native-paper';
 import RenderHTML from 'react-native-render-html';
 import {handleNetworkError, normalizeEnumName} from 'utils';
+import AppStyles from 'utils/styles';
 import {QUERY} from './query';
 import type {Character_Character_media_edges, QCharacter} from './types';
 import type {ListRenderItem} from 'react-native';
@@ -31,16 +32,38 @@ const CharacterScreen = ({
   });
 
   useEffect(() => {
-    navigation.setOptions({
-      title: route.params.name,
-    });
-  }, []);
+    if (route.params.name) {
+      navigation.setOptions({
+        title: route.params.name,
+      });
+    } else if (data?.Character.name.full) {
+      navigation.setOptions({
+        title: data.Character.name.full,
+      });
+    }
+  }, [route.params.name, data?.Character.name.full]);
+
+  const onPressCover = () => {
+    const img =
+      route.params.image ||
+      data?.Character.image?.large ||
+      data?.Character.image?.medium;
+    if (img) {
+      navigation.navigate('Gallery', {idx: 0, images: [img]});
+    }
+  };
 
   const renderMedia: ListRenderItem<Character_Character_media_edges> = ({
     item,
   }) => {
     const onPress = () => {
-      navigation.push('Media', {item: item.node});
+      navigation.push('Media', {
+        id: item.node.id,
+        bannerImage: item.node.bannerImage,
+        coverImage: item.node.coverImage.large || item.node.coverImage.medium,
+        color: item.node.coverImage.color,
+        title: item.node.title.romaji,
+      });
     };
 
     return (
@@ -95,19 +118,30 @@ const CharacterScreen = ({
 
   const header = () => {
     return (
-      <View className="p-3">
+      <View className="px-3">
         <View className="flex-row">
-          <FastImage
+          <TouchableRipple
+            borderless
             className="aspect-poster w-1/3"
-            source={{uri: route.params.image || ''}}
-          />
+            onPress={onPressCover}>
+            <FastImage
+              className="aspect-poster w-full"
+              source={{
+                uri: route.params.image || data?.Character.image?.large || '',
+              }}
+            />
+          </TouchableRipple>
           {data && (
             <View className="ml-3 flex-1">
               <Text className="text-center" variant="titleSmall">
                 {data.Character.name.native}
               </Text>
-              <TextRow label="Age">{data.Character.age}</TextRow>
-              <TextRow label="Gender">{data.Character.gender}</TextRow>
+              {!!data.Character.age && (
+                <TextRow label="Age">{data.Character.age}</TextRow>
+              )}
+              {!!data.Character.gender && (
+                <TextRow label="Gender">{data.Character.gender}</TextRow>
+              )}
               {!!data.Character.bloodType && (
                 <TextRow label="Blood type">{data.Character.bloodType}</TextRow>
               )}
@@ -148,6 +182,7 @@ const CharacterScreen = ({
 
   return (
     <FlatList
+      contentContainerStyle={AppStyles.paddingVertical}
       data={data?.Character.media?.edges}
       ItemSeparatorComponent={Separator}
       ListEmptyComponent={listEmpty}

@@ -39,21 +39,31 @@ const StaffScreen = ({navigation, route}: RootStackScreenProps<'Staff'>) => {
   const [tabIndex, setTabIndex] = useState(0);
 
   useEffect(() => {
+    if (route.params.name) {
+      navigation.setOptions({
+        title: route.params.name,
+      });
+    }
+  }, [route.params.name]);
+
+  const setTitle = (title: string) => {
     navigation.setOptions({
-      title: route.params.name,
+      title,
     });
-  }, []);
+  };
 
   const goToMedia = (item: IMediaItem) => {
-    navigation.push('Media', {item});
+    navigation.push('Media', {
+      id: item.id,
+      bannerImage: item.bannerImage,
+      coverImage: item.coverImage.large || item.coverImage.medium,
+      color: item.coverImage.color,
+      title: item.title.romaji,
+    });
   };
 
   const goToCharacter = (id: number, image: string, name: string) => {
-    navigation.push('Character', {
-      id,
-      image,
-      name,
-    });
+    navigation.push('Character', {id, image, name});
   };
 
   const openGallery = (idx: number, images: string[]) => {
@@ -70,6 +80,7 @@ const StaffScreen = ({navigation, route}: RootStackScreenProps<'Staff'>) => {
             id={route.params.id}
             image={route.params.image}
             openGallery={openGallery}
+            setTitle={setTitle}
           />
         );
       case 'characters':

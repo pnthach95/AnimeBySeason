@@ -148,7 +148,13 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
 
   const renderItem: ListRenderItem<IMediaItem> = ({item}) => {
     const onPress = () => {
-      navigation.navigate('Media', {item});
+      navigation.navigate('Media', {
+        id: item.id,
+        bannerImage: item.bannerImage,
+        coverImage: item.coverImage.large || item.coverImage.medium,
+        color: item.coverImage.color,
+        title: item.title.romaji,
+      });
     };
 
     return <MediaItem item={item} onPress={onPress} />;

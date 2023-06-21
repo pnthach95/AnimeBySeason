@@ -8,34 +8,33 @@ import type {StackScreenProps} from '@react-navigation/stack';
 type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
   Media: {
-    item: {
-      /**
-       * The id of the media
-       */
-      id: number;
-      /**
-       * The official titles of the media in various languages
-       */
-      title: MediaTitle;
-      /**
-       * The cover images of the media
-       */
-      coverImage: MediaCoverImage;
-      /**
-       * The banner image of the media
-       */
-      bannerImage: string | null;
-    };
+    /**
+     * The id of the media
+     */
+    id: number;
+    /**
+     * The official titles of the media in various languages
+     */
+    title?: string;
+    /**
+     * The cover images of the media
+     */
+    coverImage?: string | null;
+    color?: string | null;
+    /**
+     * The banner image of the media
+     */
+    bannerImage?: string | null;
   };
   Character: {
     id: number;
-    image: string;
-    name: string;
+    image?: string;
+    name?: string | null;
   };
   Staff: {
     id: number;
-    image: string;
-    name: string;
+    image?: string | null;
+    name?: string | null;
   };
   Search: undefined;
   Gallery: {
