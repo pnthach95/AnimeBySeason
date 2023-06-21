@@ -4,6 +4,7 @@ import {
   BottomSheetModal,
   useBottomSheetDynamicSnapPoints,
 } from '@gorhom/bottom-sheet';
+import {useScrollToTop} from '@react-navigation/native';
 import Loading from 'components/loading';
 import MediaItem from 'components/mediaitem';
 import Separator from 'components/separator';
@@ -72,7 +73,7 @@ const MEDIA_FORMATS: MediaFormat[] = [
 ];
 
 const getInitSeason = () => {
-  const month = dayjs().month();
+  const month = dayjs().month() + 1;
   if (month >= 3 && month <= 5) {
     return MediaSeason.SPRING;
   }
@@ -86,6 +87,7 @@ const getInitSeason = () => {
 };
 
 const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
+  const ref = useRef(null);
   const initialSnapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
   const seasonSheetRef = useRef<BottomSheetModal>(null);
   const seasonYearSheetRef = useRef<BottomSheetModal>(null);
@@ -112,6 +114,8 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
   >(QUERY, {
     variables: query,
   });
+
+  useScrollToTop(ref);
 
   useEffect(() => {
     if (refreshing && !loading) {
@@ -239,6 +243,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
   return (
     <>
       <FlatList
+        ref={ref}
         contentContainerStyle={AppStyles.paddingVertical}
         data={data?.Page.media}
         ItemSeparatorComponent={Separator}
