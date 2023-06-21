@@ -28,6 +28,8 @@ export const QUERY = gql`
       tags {
         id
         name
+        description
+        rank
       }
       characters(sort: [ROLE, RELEVANCE, ID]) {
         edges {

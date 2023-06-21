@@ -21,6 +21,8 @@ export interface Anime_Media_tags {
    * The name of the tag
    */
   name: string;
+  description: string;
+  rank: number;
 }
 
 export interface Anime_Media_characters_edges_voiceActors_name {

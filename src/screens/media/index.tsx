@@ -326,9 +326,6 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
                 {normalizeEnumName(data.Media.source)}
               </TextRow>
               <TextRow label="Genres">{data.Media.genres.join(', ')}</TextRow>
-              <TextRow label="Tags">
-                {data.Media.tags.map(t => t.name).join(', ')}
-              </TextRow>
               <Text variant="labelMedium">Characters</Text>
             </View>
             <FlatList
@@ -375,6 +372,18 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
                 />
               </>
             )}
+            <Text className="mx-3 mb-3" variant="labelMedium">
+              Tags
+            </Text>
+            {data.Media.tags.map(t => (
+              <Surface className="mx-3 mb-3 rounded-xl p-3">
+                <View className="flex-row justify-between">
+                  <Text>{t.name}</Text>
+                  <Text>{t.rank}</Text>
+                </View>
+                <Text variant="labelSmall">{t.description.trim()}</Text>
+              </Surface>
+            ))}
           </View>
         ) : (
           <Loading errorText={handleNetworkError(error)} loading={loading} />
