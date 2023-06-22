@@ -9,10 +9,11 @@ type Props = {
 };
 
 const Person = ({image, name, onPress}: Props) => {
+  const source = {uri: image};
   return (
     <TouchableRipple className="w-24 items-center" onPress={onPress}>
       <>
-        <FastImage className="aspect-poster w-20" source={{uri: image}} />
+        <FastImage className="aspect-poster w-20" source={source} />
         <Text selectable className="text-center">
           {name}
         </Text>

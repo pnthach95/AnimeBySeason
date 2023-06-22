@@ -11,19 +11,20 @@ type Props = {
 };
 
 const MediaItem = ({item, children, onPress}: PropsWithChildren<Props>) => {
+  const source = {uri: item.coverImage.medium || ''};
+  const imgbg = {
+    backgroundColor: item.coverImage.color || undefined,
+  };
+
   return (
     <TouchableRipple onPress={onPress}>
       <View className="mx-3 flex-row">
-        {!!item.coverImage.medium && (
-          <FastImage
-            className="aspect-poster w-20"
-            resizeMode="contain"
-            source={{uri: item.coverImage.medium}}
-            style={{
-              backgroundColor: item.coverImage.color || undefined,
-            }}
-          />
-        )}
+        <FastImage
+          className="aspect-poster w-20"
+          resizeMode="contain"
+          source={source}
+          style={imgbg}
+        />
         <View className="ml-3 flex-1">
           <Text variant="titleLarge">{item.title.romaji}</Text>
           {!!item.title.english && (

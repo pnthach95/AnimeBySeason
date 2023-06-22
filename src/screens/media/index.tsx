@@ -24,8 +24,10 @@ import RenderHtml from 'react-native-render-html';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {handleNetworkError, normalizeEnumName} from 'utils';
 import AppStyles, {useSafeAreaPaddingTop} from 'utils/styles';
+import Character from './character';
 import Person from './person';
 import {QUERY} from './query';
+import Relation from './relation';
 import type {
   Anime,
   AnimeVariables,
@@ -55,14 +57,20 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
     : data?.Media.coverImage.color
     ? colord(data.Media.coverImage.color).isDark()
     : dark;
+  const headerColor = {
+    backgroundColor:
+      route.params.color || data?.Media.coverImage.color || colors.background,
+  };
+  const bannerImage = route.params.bannerImage || data?.Media.bannerImage;
+  const bannerHeightStyle = {height: bannerHeight};
+  const coverImage =
+    route.params.coverImage ||
+    data?.Media.coverImage.large ||
+    data?.Media.coverImage.medium;
 
   const onPressCover = () => {
-    const img =
-      route.params.coverImage ||
-      data?.Media.coverImage.large ||
-      data?.Media.coverImage.medium;
-    if (img) {
-      navigation.navigate('Gallery', {idx: 0, images: [img]});
+    if (coverImage) {
+      navigation.navigate('Gallery', {idx: 0, images: [coverImage]});
     }
   };
 
@@ -80,46 +88,25 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
   }) => {
     const onPressCharacter = () => {
       if (item.node) {
-        const {node} = item;
+        const {id, image, name} = item.node;
         navigation.push('Character', {
-          id: node.id,
-          image: node.image.large,
-          name: node.name.userPreferred,
+          id,
+          image: image.large,
+          name: name.userPreferred,
         });
       }
     };
 
-    return (
-      <Surface className="my-3 rounded-xl py-1">
-        <Text className="mx-3 mb-1" variant="labelSmall">
-          {normalizeEnumName(item.role)}
-        </Text>
-        <View className="flex-row">
-          <Person
-            image={item.node?.image.large || ''}
-            name={item.node?.name.userPreferred || ''}
-            onPress={onPressCharacter}
-          />
-          {item.voiceActors.map(va => {
-            const onPressVA = () => {
-              navigation.push('Staff', {
-                id: va.id,
-                image: va.image?.large || '',
-                name: va.name?.userPreferred || '',
-              });
-            };
+    const onPressVA = (id: number, image: string, name: string) => {
+      navigation.push('Staff', {id, image, name});
+    };
 
-            return (
-              <Person
-                key={`${va.__typename}_${va.id}`}
-                image={va.image?.large || ''}
-                name={va.name?.userPreferred || ''}
-                onPress={onPressVA}
-              />
-            );
-          })}
-        </View>
-      </Surface>
+    return (
+      <Character
+        item={item}
+        onPressCharacter={onPressCharacter}
+        onPressVA={onPressVA}
+      />
     );
   };
 
@@ -173,30 +160,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
       });
     };
 
-    return (
-      <Surface className="my-3 max-w-[180px] rounded-xl">
-        <TouchableRipple
-          borderless
-          className="flex-1 rounded-xl"
-          onPress={onPress}>
-          <View className="items-center space-y-1 p-3">
-            <Text variant="labelSmall">
-              {normalizeEnumName(item.relationType)}
-            </Text>
-            <FastImage
-              className="aspect-poster w-20"
-              source={{uri: item.node.coverImage.medium || ''}}
-            />
-            <Text className="text-center" numberOfLines={3}>
-              {item.node.title.romaji}
-            </Text>
-            <Text variant="bodySmall">
-              {normalizeEnumName(item.node.format)}
-            </Text>
-          </View>
-        </TouchableRipple>
-      </Surface>
-    );
+    return <Relation item={item} onPress={onPress} />;
   };
 
   return (
@@ -210,16 +174,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
       <Animated.View
         className="absolute z-10 w-full"
         pointerEvents="none"
-        style={[
-          {
-            backgroundColor:
-              route.params.color ||
-              data?.Media.coverImage.color ||
-              colors.background,
-          },
-          paddingTop,
-          stylez,
-        ]}>
+        style={[headerColor, paddingTop, stylez]}>
         <View className="h-14 flex-row items-center">
           <Appbar.BackAction
             color={isColorDark ? 'white' : 'black'}
@@ -238,16 +193,15 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}>
-        {!!route.params.bannerImage || !!data?.Media.bannerImage ? (
+        {bannerImage ? (
           <>
             <TouchableRipple borderless onPress={onPressBanner}>
               <FastImage
                 className="w-full"
                 source={{
-                  uri:
-                    route.params.bannerImage || data?.Media.bannerImage || '',
+                  uri: bannerImage || '',
                 }}
-                style={{height: bannerHeight}}
+                style={bannerHeightStyle}
               />
             </TouchableRipple>
             <View
@@ -255,7 +209,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
                 dark ? 'bg-black/30' : 'bg-white/30'
               }`}
               pointerEvents="none"
-              style={{height: bannerHeight}}
+              style={bannerHeightStyle}
             />
           </>
         ) : (
@@ -267,17 +221,14 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
           variant="headlineMedium">
           {route.params.title || data?.Media.title.romaji}
         </Text>
-        {(!!route.params.coverImage || !!data?.Media.coverImage.large) && (
+        {!!coverImage && (
           <TouchableRipple
             borderless
             className="self-center"
             onPress={onPressCover}>
             <FastImage
               className="aspect-poster w-36 self-center"
-              source={{
-                uri:
-                  route.params.coverImage || data?.Media.coverImage.large || '',
-              }}
+              source={{uri: coverImage}}
             />
           </TouchableRipple>
         )}
