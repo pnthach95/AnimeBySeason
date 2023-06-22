@@ -31,7 +31,7 @@ import {
 } from 'typings/globalTypes';
 import {useImmer} from 'use-immer';
 import {handleNetworkError, normalizeEnumName} from 'utils';
-import AppStyles from 'utils/styles';
+import {useSafeAreaPaddingBottom, useSafeAreaPaddingTop} from 'utils/styles';
 import {QUERY} from './query';
 import type {AnimeList} from './types';
 import type {ListRenderItem} from 'react-native';
@@ -98,6 +98,8 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
     animatedContentHeight,
     handleContentLayout,
   } = useBottomSheetDynamicSnapPoints(initialSnapPoints);
+  const bottomSheetStyle = useSafeAreaPaddingBottom();
+  const contentStyle = useSafeAreaPaddingTop(12, {paddingBottom: 12});
   const {colors} = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [query, setQuery] = useImmer<TQuery>({
@@ -244,7 +246,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
     <>
       <FlatList
         ref={ref}
-        contentContainerStyle={AppStyles.paddingVertical}
+        contentContainerStyle={contentStyle}
         data={data?.Page.media}
         ItemSeparatorComponent={Separator}
         ListEmptyComponent={listEmpty}
@@ -252,7 +254,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         renderItem={renderItem}
         onEndReached={onEndReached}
       />
-      <Appbar.Header elevated className="justify-evenly">
+      <Appbar.Header elevated className="justify-evenly" statusBarHeight={0}>
         <Button compact onPress={onShowSeason}>
           Season {query.season}
         </Button>
@@ -274,6 +276,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         handleHeight={animatedHandleHeight}
         snapPoints={animatedSnapPoints}>
         <BottomSheetFlatList
+          contentContainerStyle={bottomSheetStyle}
           data={MEDIA_SEASONS}
           renderItem={renderMediaSeason}
           onLayout={handleContentLayout}
@@ -289,6 +292,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         handleHeight={animatedHandleHeight}
         snapPoints={animatedSnapPoints}>
         <BottomSheetFlatList
+          contentContainerStyle={bottomSheetStyle}
           data={YEARS}
           renderItem={renderYear}
           onLayout={handleContentLayout}
@@ -304,6 +308,7 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
         handleHeight={animatedHandleHeight}
         snapPoints={animatedSnapPoints}>
         <BottomSheetFlatList
+          contentContainerStyle={bottomSheetStyle}
           data={MEDIA_FORMATS}
           renderItem={renderMediaFormat}
           onLayout={handleContentLayout}

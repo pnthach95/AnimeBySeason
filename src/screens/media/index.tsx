@@ -48,6 +48,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
   const insets = useSafeAreaInsets();
   const paddingTop = useSafeAreaPaddingTop();
   const marginTop = {marginTop: insets.top};
+  const bannerHeight = 56 + insets.top;
   const baseStyle = {color: colors.onBackground, padding: 12};
   const isColorDark = route.params.color
     ? colord(route.params.color).isDark()
@@ -152,13 +153,12 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
     return {
       opacity: interpolate(
         translationY.value,
-        [0, 56 - insets.top],
+        [0, bannerHeight - insets.top],
         [0, 1],
         Extrapolation.CLAMP,
       ),
-      display: translationY.value === 0 ? 'none' : undefined,
     };
-  });
+  }, [bannerHeight]);
 
   const renderRelation: ListRenderItem<Anime_Media_relations_edges> = ({
     item,
@@ -209,6 +209,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
       </View>
       <Animated.View
         className="absolute z-10 w-full"
+        pointerEvents="none"
         style={[
           {
             backgroundColor:
@@ -241,18 +242,20 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
           <>
             <TouchableRipple borderless onPress={onPressBanner}>
               <FastImage
-                className="aspect-banner w-full"
+                className="w-full"
                 source={{
                   uri:
                     route.params.bannerImage || data?.Media.bannerImage || '',
                 }}
+                style={{height: bannerHeight}}
               />
             </TouchableRipple>
             <View
-              className={`absolute aspect-banner w-full ${
+              className={`absolute w-full ${
                 dark ? 'bg-black/30' : 'bg-white/30'
               }`}
               pointerEvents="none"
+              style={{height: bannerHeight}}
             />
           </>
         ) : (

@@ -7,7 +7,7 @@ import duration from 'dayjs/plugin/duration';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import {useColorScheme} from 'nativewind';
 import React, {useEffect} from 'react';
-import {StatusBar} from 'react-native';
+import {Platform, StatusBar} from 'react-native';
 import CharacterScreen from 'screens/character';
 import GalleryScreen from 'screens/gallery';
 import MediaScreen from 'screens/media';
@@ -56,7 +56,9 @@ const Routes = () => {
       StatusBar.setBarStyle(
         appTheme === 'dark' ? 'light-content' : 'dark-content',
       );
-      StatusBar.setBackgroundColor(colors.card);
+      if (Platform.OS === 'android') {
+        StatusBar.setBackgroundColor(colors.card);
+      }
     }, 500);
   }, []);
 
@@ -72,7 +74,7 @@ const Routes = () => {
         backgroundColor={colors.elevation.level2}
         barStyle={appTheme === 'dark' ? 'light-content' : 'dark-content'}
       />
-      <RootStack.Navigator>
+      <RootStack.Navigator screenOptions={{headerBackTitleVisible: false}}>
         <RootStack.Screen
           component={MainTab}
           name="Main"
