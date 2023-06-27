@@ -15,9 +15,7 @@ const Relation = ({item, onPress}: Props) => {
 
   return (
     <Surface className="my-3 max-w-[160px] rounded-xl">
-      <TouchableRipple
-        className="grow rounded-xl bg-teal-200"
-        onPress={onPress}>
+      <TouchableRipple className="grow rounded-xl" onPress={onPress}>
         <View className="items-center space-y-1 p-3 ">
           <Text variant="labelSmall">
             {normalizeEnumName(item.relationType)}
