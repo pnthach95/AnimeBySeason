@@ -1,8 +1,9 @@
 import {useQuery} from '@apollo/client';
+import {StackActions, useNavigation} from '@react-navigation/native';
 import TextRow from 'components/textrow';
 import dayjs from 'dayjs';
 import React, {useEffect} from 'react';
-import {ScrollView, View, useWindowDimensions} from 'react-native';
+import {Linking, ScrollView, View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   ActivityIndicator,
@@ -24,6 +25,7 @@ type Props = {
 };
 
 const StaffInfoScreen = ({id, image, openGallery, setTitle}: Props) => {
+  const navigation = useNavigation();
   const {colors} = useTheme();
   const {width} = useWindowDimensions();
   const baseStyle = {color: colors.onBackground, paddingTop: 12};
@@ -137,6 +139,40 @@ const StaffInfoScreen = ({id, image, openGallery, setTitle}: Props) => {
             <RenderHTML
               baseStyle={baseStyle}
               contentWidth={width}
+              renderersProps={{
+                a: {
+                  onPress: (e, url) => {
+                    const l = 'https://anilist.co/';
+                    if (url.startsWith(l)) {
+                      const ll = url.replace(l, '').split('/');
+                      let name = '';
+                      switch (ll[0]) {
+                        case 'staff':
+                          name = 'Staff';
+                          break;
+                        case 'anime':
+                        case 'manga':
+                          name = 'Media';
+                          break;
+                        case 'character':
+                          name = 'Character';
+                          break;
+                        default:
+                          break;
+                      }
+                      if (name) {
+                        navigation.dispatch(
+                          StackActions.push(name, {
+                            id: parseInt(ll[1], 10),
+                          }),
+                        );
+                      }
+                    } else {
+                      Linking.openURL(url);
+                    }
+                  },
+                },
+              }}
               source={{html: data.StaffInfo.description || ''}}
             />
           </>
