@@ -165,7 +165,7 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
 
   return (
     <>
-      <StatusBar translucent backgroundColor="transparent" />
+      <StatusBar backgroundColor="transparent" />
       <View className="absolute z-10" style={paddingTop}>
         <View className="h-14 flex-row items-center">
           <Appbar.BackAction onPress={navigation.goBack} />

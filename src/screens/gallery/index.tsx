@@ -1,12 +1,11 @@
 import {useIsFocused} from '@react-navigation/native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Platform, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {StatusBar, StyleSheet, Text, View} from 'react-native';
 import AwesomeGallery from 'react-native-awesome-gallery';
 import FastImage from 'react-native-fast-image';
 import Animated, {FadeInUp, FadeOutUp} from 'react-native-reanimated';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useAppColorScheme} from 'stores';
-import {useAppTheme} from 'utils/themes';
 import type {GalleryRef, RenderItemInfo} from 'react-native-awesome-gallery';
 import type {RootStackScreenProps} from 'typings/navigation';
 
@@ -31,7 +30,6 @@ const GalleryScreen = ({
   navigation,
   route,
 }: RootStackScreenProps<'Gallery'>) => {
-  const {colors} = useAppTheme();
   const appTheme = useAppColorScheme();
   const {top} = useSafeAreaInsets();
   const isFocused = useIsFocused();
@@ -41,10 +39,6 @@ const GalleryScreen = ({
   useEffect(() => {
     setMounted(true);
     return () => {
-      if (Platform.OS === 'android') {
-        StatusBar.setBackgroundColor(colors.card);
-        StatusBar.setTranslucent(false);
-      }
       StatusBar.setBarStyle(
         appTheme === 'dark' ? 'light-content' : 'dark-content',
       );
@@ -55,9 +49,6 @@ const GalleryScreen = ({
 
   useEffect(() => {
     StatusBar.setBarStyle(isFocused ? 'light-content' : 'dark-content', true);
-    if (Platform.OS === 'android') {
-      StatusBar.setTranslucent(isFocused);
-    }
     if (!isFocused) {
       StatusBar.setHidden(false, 'fade');
     }

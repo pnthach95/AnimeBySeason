@@ -71,7 +71,7 @@ const Routes = () => {
       linking={LINKING}
       theme={appTheme === 'dark' ? navigationDarkTheme : navigationTheme}>
       <StatusBar
-        backgroundColor={colors.elevation.level2}
+        translucent
         barStyle={appTheme === 'dark' ? 'light-content' : 'dark-content'}
       />
       <RootStack.Navigator screenOptions={{headerBackTitleVisible: false}}>
