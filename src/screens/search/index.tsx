@@ -3,7 +3,7 @@ import Loading from 'components/loading';
 import MediaItem from 'components/mediaitem';
 import Separator from 'components/separator';
 import React from 'react';
-import {FlatList} from 'react-native';
+import {FlatList, StatusBar} from 'react-native';
 import {Searchbar} from 'react-native-paper';
 import {useDebouncedCallback} from 'use-debounce';
 import {useImmer} from 'use-immer';
@@ -86,6 +86,7 @@ const SearchScreen = ({navigation}: RootStackScreenProps<'Search'>) => {
     <>
       <Searchbar
         className="ml-16 mr-3"
+        style={{marginTop: StatusBar.currentHeight}}
         value={query.keyword}
         onChangeText={onChangeText}
       />
