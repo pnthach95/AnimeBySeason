@@ -11,6 +11,12 @@ import {
 // GraphQL query operation: Anime
 // ====================================================
 
+export interface Anime_Media_trailer {
+  __typename: 'MediaTrailer';
+  id: string;
+  site: 'youtube' | 'dailymotion';
+}
+
 export interface Anime_Media_tags {
   __typename: 'MediaTag';
   /**
@@ -311,6 +317,7 @@ export interface Anime_Media {
    * Other media in the same or connecting franchise
    */
   relations: Anime_Media_relations | null;
+  trailer: Anime_Media_trailer | null;
   /**
    * If the media is intended only for 18+ adult audiences
    */

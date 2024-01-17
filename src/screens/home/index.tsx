@@ -1,9 +1,5 @@
 import {useQuery} from '@apollo/client';
-import {
-  BottomSheetFlatList,
-  BottomSheetModal,
-  useBottomSheetDynamicSnapPoints,
-} from '@gorhom/bottom-sheet';
+import {BottomSheetFlatList, BottomSheetModal} from '@gorhom/bottom-sheet';
 import {useScrollToTop} from '@react-navigation/native';
 import Loading from 'components/loading';
 import MediaItem from 'components/mediaitem';
@@ -12,7 +8,7 @@ import CustomBackdrop from 'components/sheet/backdrop';
 import CustomBackground from 'components/sheet/background';
 import CustomHandle from 'components/sheet/handle';
 import dayjs from 'dayjs';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {FlatList, RefreshControl} from 'react-native';
 import {
   Appbar,
@@ -88,16 +84,9 @@ const getInitSeason = () => {
 
 const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
   const ref = useRef(null);
-  const initialSnapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
   const seasonSheetRef = useRef<BottomSheetModal>(null);
   const seasonYearSheetRef = useRef<BottomSheetModal>(null);
   const formatSheetRef = useRef<BottomSheetModal>(null);
-  const {
-    animatedHandleHeight,
-    animatedSnapPoints,
-    animatedContentHeight,
-    handleContentLayout,
-  } = useBottomSheetDynamicSnapPoints(initialSnapPoints);
   const bottomSheetStyle = useSafeAreaPaddingBottom();
   const contentStyle = useSafeAreaPaddingTop(12, {paddingBottom: 12});
   const {colors} = useTheme();
@@ -268,50 +257,41 @@ const HomeScreen = ({navigation}: MainTabScreenProps<'Home'>) => {
       </Appbar.Header>
       <BottomSheetModal
         ref={seasonSheetRef}
+        enableDynamicSizing
         enablePanDownToClose
         backdropComponent={CustomBackdrop}
         backgroundComponent={CustomBackground}
-        contentHeight={animatedContentHeight}
-        handleComponent={CustomHandle}
-        handleHeight={animatedHandleHeight}
-        snapPoints={animatedSnapPoints}>
+        handleComponent={CustomHandle}>
         <BottomSheetFlatList
           contentContainerStyle={bottomSheetStyle}
           data={MEDIA_SEASONS}
           renderItem={renderMediaSeason}
-          onLayout={handleContentLayout}
         />
       </BottomSheetModal>
       <BottomSheetModal
         ref={seasonYearSheetRef}
+        enableDynamicSizing
         enablePanDownToClose
         backdropComponent={CustomBackdrop}
         backgroundComponent={CustomBackground}
-        contentHeight={animatedContentHeight}
-        handleComponent={CustomHandle}
-        handleHeight={animatedHandleHeight}
-        snapPoints={animatedSnapPoints}>
+        handleComponent={CustomHandle}>
         <BottomSheetFlatList
           contentContainerStyle={bottomSheetStyle}
           data={YEARS}
           renderItem={renderYear}
-          onLayout={handleContentLayout}
         />
       </BottomSheetModal>
       <BottomSheetModal
         ref={formatSheetRef}
+        enableDynamicSizing
         enablePanDownToClose
         backdropComponent={CustomBackdrop}
         backgroundComponent={CustomBackground}
-        contentHeight={animatedContentHeight}
-        handleComponent={CustomHandle}
-        handleHeight={animatedHandleHeight}
-        snapPoints={animatedSnapPoints}>
+        handleComponent={CustomHandle}>
         <BottomSheetFlatList
           contentContainerStyle={bottomSheetStyle}
           data={MEDIA_FORMATS}
           renderItem={renderMediaFormat}
-          onLayout={handleContentLayout}
         />
       </BottomSheetModal>
     </>

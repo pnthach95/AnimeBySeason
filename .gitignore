@@ -63,3 +63,6 @@ yarn-error.log
 .metro-health-check*
 
 .vscode/.react/
+
+# testing
+/coverage

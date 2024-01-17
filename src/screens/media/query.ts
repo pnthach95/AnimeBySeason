@@ -109,6 +109,10 @@ export const QUERY = gql`
           }
         }
       }
+      trailer {
+        id
+        site
+      }
       isAdult
     }
   }

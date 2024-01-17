@@ -8,6 +8,7 @@ import {FlatList, StatusBar, View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   Appbar,
+  IconButton,
   Surface,
   Text,
   TouchableRipple,
@@ -22,7 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import RenderHtml from 'react-native-render-html';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {handleNetworkError, normalizeEnumName} from 'utils';
+import {handleNetworkError, normalizeEnumName, openLink} from 'utils';
 import AppStyles, {useSafeAreaPaddingTop} from 'utils/styles';
 import Character from './character';
 import Person from './person';
@@ -163,6 +164,17 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
     return <Relation item={item} onPress={onPress} />;
   };
 
+  const onPressTrailer = () => {
+    if (data?.Media.trailer) {
+      const {id, site} = data.Media.trailer;
+      if (site === 'youtube') {
+        openLink('https://youtube.com/watch?v=' + id);
+      } else {
+        openLink('https://dailymotion.com/video/' + id);
+      }
+    }
+  };
+
   return (
     <>
       <StatusBar backgroundColor="transparent" />
@@ -215,12 +227,11 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
         ) : (
           <View className="h-14 w-full" style={marginTop} />
         )}
-        <Text
-          selectable
-          className="mx-3 my-3 text-center"
-          variant="headlineMedium">
-          {route.params.title || data?.Media.title.romaji}
-        </Text>
+        <View className="px-5 py-3">
+          <Text selectable className="text-center" variant="headlineMedium">
+            {route.params.title || data?.Media.title.romaji}
+          </Text>
+        </View>
         {!!coverImage && (
           <TouchableRipple
             borderless
@@ -318,6 +329,26 @@ const MediaScreen = ({navigation, route}: RootStackScreenProps<'Media'>) => {
                 defaultTextProps={{selectable: true}}
                 source={{html: data.Media.description}}
               />
+            )}
+            {data.Media.trailer && (
+              <>
+                <Text className="mx-3" variant="labelMedium">
+                  Trailer
+                </Text>
+                <IconButton
+                  className="mx-3"
+                  icon={
+                    data.Media.trailer.site === 'youtube' ? 'youtube' : 'video'
+                  }
+                  iconColor={
+                    route.params.color ||
+                    data?.Media.coverImage.color ||
+                    undefined
+                  }
+                  mode="contained"
+                  onPress={onPressTrailer}
+                />
+              </>
             )}
             {data.Media.relations && (
               <>
